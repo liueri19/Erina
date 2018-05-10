@@ -1,3 +1,4 @@
+import greenfoot.Actor;
 import greenfoot.GreenfootSound;
 import greenfoot.World;
 
@@ -44,11 +45,16 @@ public final class Erina extends World {
 
 	@Override
 	public <T> List<T> getObjects(Class<T> cls) {
-		return Collections.emptyList();
+		// if a type of subtype of actor was passed in
+		if (Actor.class.isAssignableFrom(cls))
+			return Collections.emptyList();
+		return super.getObjects(cls);
 	}
 
 	@Override
 	public <T> List<T> getObjectsAt(int x, int y, Class<T> cls) {
+		if (Actor.class.isAssignableFrom(cls))
+			return Collections.emptyList();
 		return Collections.emptyList();
 	}
 }

@@ -41,6 +41,14 @@ public final class Erina extends World {
 	 * getObjectsAt(int x, int y, Class<A> cls)
 	 *
 	 * These methods are overridden in this class.
+	 *
+	 *
+	 * Restricted methods in MouseInfo as of v2.4:
+	 * getActor()
+	 *
+	 * MouseInfo instances can always be acquired via the static method Greenfoot.getMouseInfo().
+	 * There is no way to restrict this method, so it is important to keep the mouse off the Erina
+	 * during execution.
 	 */
 
 	private static final int WORLD_WIDTH = 1024;

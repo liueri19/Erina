@@ -18,10 +18,29 @@ public final class Erina extends World {
 	/*
 	 * Note to future maintainers:
 	 * In order to limit the Competitors from accessing certain methods, those methods have been
-	 * overriden. It is important to pervent Competitors from gaining access to instances of super
+	 * restricted. It is important to prevent Competitors from gaining access to instances of super
 	 * types (such as Actor, World), as such instances would enable the Competitors to call illegal 
 	 * methods. It is also important to override (or in some other way limit) any additional 
-	 * methods that may be added to Greenfoot in a future Greenfoot release.
+	 * methods that may be added to Greenfoot in future Greenfoot releases.
+	 *
+	 *
+	 * Restricted methods in Actor as of v2.5:
+	 * getIntersectingObjects(Class<A> cls)
+	 * getNeighbours(int distance, boolean diagonal, Class<A> cls)
+	 * getObjectsAtOffset(int dx, int dy, Class<A> cls)
+	 * getObjectsInRange(int radius, Class<A> cls)
+	 * getOneIntersectingObject(Class<?> cls)
+	 * getOneObjectAtOffset(int dx, int dy, Class<?> cls)
+	 *
+	 * Competitors no longer extend Actors, instead the super class contain a private Actor field
+	 * inaccessible to subclasses.
+	 *
+	 *
+	 * Restricted methods in World as of v2.6:
+	 * getObjects(Class<A> cls)
+	 * getObjectsAt(int x, int y, Class<A> cls)
+	 *
+	 * These methods are overridden in this class.
 	 */
 
 	private static final int WORLD_WIDTH = 1024;
@@ -45,7 +64,7 @@ public final class Erina extends World {
 
 	@Override
 	public <T> List<T> getObjects(Class<T> cls) {
-		// if a type of subtype of actor was passed in
+		// if a type of subtype of Actor was passed in
 		if (Actor.class.isAssignableFrom(cls))
 			return Collections.emptyList();
 		return super.getObjects(cls);

@@ -1,3 +1,5 @@
+package erina;
+
 import greenfoot.Actor;
 import greenfoot.GreenfootSound;
 import greenfoot.World;
@@ -6,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The Erina is the perfected version of the original beloved and wildly popular Arena.
+ * The erina.Erina is the perfected version of the original beloved and wildly popular Arena.
  * This is the World where Competitors compete in.
- * The Erina aims to:
+ * The erina.Erina aims to:
  * Force the Competitors to comply with requirements on method usage,
  * Keep it easy to implement Competitors,
  * Resolve the hitter hittee issue that plagued the original Arena.
@@ -47,7 +49,7 @@ public final class Erina extends World {
 	 * getActor()
 	 *
 	 * MouseInfo instances can always be acquired via the static method Greenfoot.getMouseInfo().
-	 * There is no way to restrict this method, so it is important to keep the mouse off the Erina
+	 * There is no way to restrict this method, so it is important to keep the mouse off the erina.Erina
 	 * during execution.
 	 */
 
@@ -60,7 +62,7 @@ public final class Erina extends World {
 	public Erina() {
 		super(WORLD_WIDTH, WORLD_HEIGHT, 1);
 
-		System.out.println("Welcome to The Erina!");
+		System.out.println("Welcome to The erina.Erina!");
 	}
 
 

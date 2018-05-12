@@ -11,6 +11,21 @@ package core;
  */
 public abstract class Entity<A extends EntityActor> {
 	private A actor;
+	private boolean hasInit;
+
+	/**
+	 * Initialize this Entity, binds this Entity with the specified EntityActor.
+	 * @param actor	the Actor to bind to
+	 * @throws IllegalStateException	if this Entity has already initialized
+	 */
+	void init(A actor) throws IllegalStateException {
+		if (!hasInit) {
+			hasInit = true;
+			this.actor = actor;
+		}
+
+		throw new IllegalStateException("Cannot re-initialize Entity");
+	}
 
 	A getActor() { return actor; }
 }

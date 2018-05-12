@@ -4,6 +4,8 @@ import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 
+import java.util.List;
+
 /**
  * The super class of all Competitors.
  *
@@ -49,6 +51,7 @@ public abstract class Competitor extends Entity<CompetitorActor> implements Mane
 
 	/** @see	Actor#addedToWorld(World) */
 	protected void addedToWorld(World world) {}
+
 
 	@Override
 	public String toString() { return name; }

@@ -1,6 +1,5 @@
 package core;
 
-import competitors.TestCompetitor4;
 import greenfoot.Actor;
 import greenfoot.GreenfootSound;
 import greenfoot.World;

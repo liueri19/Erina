@@ -11,5 +11,10 @@ import greenfoot.Actor;
 abstract class EntityActor<E extends Entity> extends Actor {
 	private E entity;
 
+	EntityActor(E entity) {
+		this.entity = entity;
+		entity.init(this);
+	}
+
 	E getEntity() { return entity; }
 }

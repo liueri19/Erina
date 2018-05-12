@@ -1,21 +1,21 @@
-package erina;
+package core;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * This class represents an action. A Move describes a set of turnings and movements.
+ * This class represents an action. A Maneuver describes a set of turnings and movements.
  *
  * @version alpha
  * @author Eric
  */
-public class Move {
+public class Maneuver {
 
-	private interface Action {}
+	static abstract class Action {}
 
 	/** Represents an advancement of a certain distance. */
-	private static final class Advance implements Action {
+	private static final class Advance extends Action {
 		private final int distance;
 		private Advance(int distance) { this.distance = distance; }
 		@Override
@@ -23,7 +23,7 @@ public class Move {
 	}
 
 	/** Represents a clockwise turn of certain degrees. */
-	private static final class Turn implements Action {
+	private static final class Turn extends Action {
 		private final int degrees;
 		private Turn(int degrees) { this.degrees = degrees; }
 		@Override
@@ -38,13 +38,13 @@ public class Move {
 	private int x, y, direction;
 
 	/**
-	 * Creates a new Move that starts at the specified location direction the specified
+	 * Creates a new Maneuver that starts at the specified location direction the specified
 	 * direction.
 	 * @param x	the x coordinate of the start location
 	 * @param y	the y coordinate of the start location
 	 * @param direction	the starting direction in degrees
 	 */
-	public Move(int x, int y, int direction) {
+	public Maneuver(int x, int y, int direction) {
 		initialX = x;
 		this.x = x;
 
@@ -55,11 +55,11 @@ public class Move {
 	}
 
 	/**
-	 * Creates a new Move that starts at the location of the specified Competitor and
+	 * Creates a new Maneuver that starts at the location of the specified Competitor and
 	 * faces in the same direction as the Competitor.
 	 * @param competitor	the Competitor to acquire location and direction from
 	 */
-	public Move(Competitor competitor) {
+	public Maneuver(Competitor competitor) {
 		this(
 				competitor.getX(),
 				competitor.getY(),
@@ -73,7 +73,7 @@ public class Move {
 	 * @param distance	the amount to move
 	 * @return	this instance
 	 */
-	public Move move(int distance) {
+	public Maneuver move(int distance) {
 		actions.offer(new Advance(distance));
 
 		// negative direction because we are counting clockwise as positive
@@ -91,7 +91,7 @@ public class Move {
 	 * @param degrees	the amount to turn in degrees
 	 * @return	this instance
 	 */
-	public Move turn(int degrees) {
+	public Maneuver turn(int degrees) {
 		actions.offer(new Turn(degrees));
 
 		setDirection(getDirection() + degrees);
@@ -105,7 +105,7 @@ public class Move {
 	 * @param y	the y coordinate of the cell to turn to
 	 * @return	this instance
 	 */
-	public Move turnTo(int x, int y) {
+	public Maneuver turnTo(int x, int y) {
 		final double rads =
 				Math.atan(
 						(double) (y - getY()) / (x - getX())
@@ -123,7 +123,7 @@ public class Move {
 	public int getX() { return x; }
 
 	/**
-	 * Returns the x coordinate of the starting location of this Move.
+	 * Returns the x coordinate of the starting location of this Maneuver.
 	 * @return	the initial x location
 	 */
 	public int getInitialX() { return initialX; }
@@ -135,7 +135,7 @@ public class Move {
 	public int getY() { return y; }
 
 	/**
-	 * Returns the y coordinate of the starting location of this Move.
+	 * Returns the y coordinate of the starting location of this Maneuver.
 	 * @return	the initial y location
 	 */
 	public int getInitialY() { return initialY; }
@@ -153,7 +153,7 @@ public class Move {
 
 
 	/**
-	 * Returns a string representation of this Move.
+	 * Returns a string representation of this Maneuver.
 	 * This method is mainly designed to print information for debugging purposes.
 	 * @return	the string representation
 	 */
@@ -178,7 +178,7 @@ public class Move {
 	}
 
 	/**
-	 * Returns a shorter string representation of this Move.
+	 * Returns a shorter string representation of this Maneuver.
 	 * This method is mainly designed to print information for debugging purposes.
 	 * @return	the string representation
 	 */

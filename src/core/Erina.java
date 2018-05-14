@@ -99,10 +99,8 @@ public final class Erina extends World {
 	 * @throws IllegalArgumentException	if an instance of {@code Class<Actor>}
 	 * (e.g. {@code Actor.class}) was passed in
 	 */
-	@Override @Deprecated
+	@Override
 	public <T> List<T> getObjects(Class<T> cls) {
-
-		// it might be better to change those 2 deprecated methods to always throw exception
 
 		rejectType(Actor.class, cls,
 				new IllegalArgumentException("Type of or subtype of Actor is unaccepted")

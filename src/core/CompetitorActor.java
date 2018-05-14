@@ -11,7 +11,7 @@ import greenfoot.World;
  * @version alpha
  * @author Eric
  */
-class CompetitorActor extends EntityActor<Competitor> {
+class CompetitorActor extends EntityActor<Competitor, CompetitorActor> {
 	CompetitorActor(Competitor entity) {
 		super(entity);
 	}

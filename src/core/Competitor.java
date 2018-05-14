@@ -15,7 +15,7 @@ import java.util.List;
  * @version alpha
  * @author Eric
  */
-public abstract class Competitor extends Entity<CompetitorActor> implements Maneuverable {
+public abstract class Competitor extends Entity<Competitor, CompetitorActor> implements Maneuverable {
 	private final String name;
 
 	/**
@@ -37,8 +37,16 @@ public abstract class Competitor extends Entity<CompetitorActor> implements Mane
 	// delegations
 	////////////////////////////////
 
+	/** @see	Actor#addedToWorld(World) */
+	protected void addedToWorld(World world) { validate(); getActor().addedToWorld(world); }
+
 	/** @see	Actor#getImage() */
 	public final GreenfootImage getImage() { validate(); return getActor().getImage(); }
+
+	protected <T> List<T> getIntersectingObjects(Class<T> cls) {
+		// TODO
+		return null;
+	}
 
 	/** @see	Actor#getX() */
 	public final int getX() { validate(); return getActor().getX(); }
@@ -48,9 +56,6 @@ public abstract class Competitor extends Entity<CompetitorActor> implements Mane
 
 	/** @see	Actor#getRotation() */
 	public final int getDirection() { validate(); return getActor().getRotation(); }
-
-	/** @see	Actor#addedToWorld(World) */
-	protected void addedToWorld(World world) {}
 
 
 	@Override

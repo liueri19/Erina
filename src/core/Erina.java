@@ -6,6 +6,7 @@ import greenfoot.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +82,36 @@ public final class Erina extends World {
 	public void act() {
 
 	}
+
+
+	/**
+	 * Tests if the {@code testType} is or is subtype of {@code rejectedType}. Throws the
+	 * specified exception if true. This method returns normally if {@code testType} is
+	 * null.
+	 * @param rejectedType	the undesired type
+	 * @param testType		the type being tested
+	 * @param e				the exception to throw
+	 */
+	static void rejectType(Class<?> rejectedType, Class<?> testType, RuntimeException e) {
+		if (testType != null && rejectedType.isAssignableFrom(testType))
+			throw e;
+	}
+
+
+//	static <T> List<T> getObjectsUsing(Function<Class<T>, List<T>> function, Class<T> type) {
+//		if (Entity.class.isAssignableFrom(type)) {
+//			// get all objects of type EntityActors, convert list to stream
+//			return function.apply(type).stream()
+//					// map actors to Entities
+//					.map(EntityActor::getEntity)
+//					// filter for entities the same type or subtype of T
+//					.filter(entity -> cls.isAssignableFrom(entity.getClass()))
+//					// cast to return type T
+//					.map(entity -> (T) entity)
+//					// collect to List
+//					.collect(Collectors.toList());
+//		}
+//	}
 
 
 	/**
@@ -172,19 +203,5 @@ public final class Erina extends World {
 
 			return results;
 		}
-	}
-
-
-	/**
-	 * Tests if the {@code testType} is or is subtype of {@code rejectedType}. Throws the
-	 * specified exception if true. This method returns normally if {@code testType} is
-	 * null.
-	 * @param rejectedType	the undesired type
-	 * @param testType		the type being tested
-	 * @param e				the exception to throw
-	 */
-	static void rejectType(Class<?> rejectedType, Class<?> testType, RuntimeException e) {
-		if (testType != null && rejectedType.isAssignableFrom(testType))
-			throw e;
 	}
 }

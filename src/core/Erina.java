@@ -94,16 +94,25 @@ public final class Erina extends World {
 	 * @return	a List of type T's returned by the specified Function
 	 */
 	static <T> List<T> getObjectsUsing(Function<Class<?>, List<?>> getter, Class<T> targetType) {
+		// if targetType is or is subtype of Entity
 		if (Entity.class.isAssignableFrom(targetType)) {
+			// apply function to Entity
 			return getter.apply(EntityActor.class).stream()
+					// filter for EntityActors
 					.filter(obj -> obj instanceof EntityActor)
+					// cast to EntityActors
 					.map(actor -> (EntityActor) actor)
+					// get Entities from EntityActors
 					.map(EntityActor::getEntity)
+					// filter for Entities of the same type or subtype of T
 					.filter(entity -> targetType.isAssignableFrom(entity.getClass()))
+					// cast to return type
 					.map(entity -> (T) entity)
+					// collect to List
 					.collect(Collectors.toList());
 		}
 		else {
+			// understanding this portion is left as an exercise to the reader :)
 			return getter.apply(targetType).stream()
 					.filter(obj -> !(obj instanceof Actor))
 					.filter(obj -> targetType.isAssignableFrom(obj.getClass()))

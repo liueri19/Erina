@@ -84,15 +84,32 @@ public final class Erina extends World {
 	}
 
 
-
-	static <T extends Entity> List<T> getEntitiesUsing(
-			Function<Class<? extends EntityActor>, List<? extends EntityActor>> getter,
-			Class<T> targetType) {
-		return getter.apply(EntityActor.class).stream()
-				.map(EntityActor::getEntity)
-				.filter(e -> targetType.isAssignableFrom(e.getClass()))
-				.map(e -> (T) e)
-				.collect(Collectors.toList());
+	/**
+	 * Get objects of target type using the specified Function.
+	 * If the targetType is or is subtype of Entity, the specified Function is invoked with EntityActor class.
+	 * The returned List should never contain Actor objects.
+	 * @param getter	the Function to get objects from
+	 * @param targetType	the Class representing the desired type
+	 * @param <T>	the desired type
+	 * @return	a List of type T's returned by the specified Function
+	 */
+	static <T> List<T> getObjectsUsing(Function<Class<?>, List<?>> getter, Class<T> targetType) {
+		if (Entity.class.isAssignableFrom(targetType)) {
+			return getter.apply(EntityActor.class).stream()
+					.filter(obj -> obj instanceof EntityActor)
+					.map(actor -> (EntityActor) actor)
+					.map(EntityActor::getEntity)
+					.filter(entity -> targetType.isAssignableFrom(entity.getClass()))
+					.map(entity -> (T) entity)
+					.collect(Collectors.toList());
+		}
+		else {
+			return getter.apply(targetType).stream()
+					.filter(obj -> !(obj instanceof Actor))
+					.filter(obj -> targetType.isAssignableFrom(obj.getClass()))
+					.map(obj -> (T) obj)
+					.collect(Collectors.toList());
+		}
 	}
 
 
@@ -119,26 +136,7 @@ public final class Erina extends World {
 				new IllegalArgumentException("Type of or subtype of Actor is unaccepted")
 		);
 
-		if (Entity.class.isAssignableFrom(cls)) {
-			// refactor those?
-
-			// get all objects of type EntityActors
-			return super.getObjects(EntityActor.class).stream()
-					// map actors to Entities
-					.map(EntityActor::getEntity)
-					// filter for entities the same type or subtype of T
-					.filter(entity -> cls.isAssignableFrom(entity.getClass()))
-					// cast to return type T
-					.map(entity -> (T) entity)
-					// collect to List
-					.collect(Collectors.toList());
-		}
-		else {
-			final List<T> results = super.getObjects(cls);
-			results.removeIf(obj -> obj instanceof Actor);
-
-			return results;
-		}
+		return getObjectsUsing(super::getObjects, cls);
 	}
 
 
@@ -168,24 +166,10 @@ public final class Erina extends World {
 				new IllegalArgumentException("Type of or subtype of Actor is unaccepted")
 		);
 
-		if (Entity.class.isAssignableFrom(cls)) {
-					// get all objects of type EntityActors, convert list to stream
-			return super.getObjectsAt(x, y, EntityActor.class).stream()
-					// map actors to entities
-					.map(EntityActor::getEntity)
-					// filter for entities the same type or subtype of T
-					.filter(entity -> cls.isAssignableFrom(entity.getClass()))
-					// cast to return type T
-					.map(entity -> (T) entity)
-					// collect to List
-					.collect(Collectors.toList());
-		}
-		else {
-			final List<T> results = super.getObjectsAt(x, y, cls);
-			results.removeIf(obj -> obj instanceof Actor);
-
-			return results;
-		}
+		return getObjectsUsing(
+				c -> super.getObjectsAt(x, y, c),
+				cls
+		);
 	}
 
 

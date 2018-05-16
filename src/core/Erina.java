@@ -185,4 +185,8 @@ public final class Erina extends World {
 		if (testType != null && rejectedType.isAssignableFrom(testType))
 			throw e;
 	}
+
+	static void rejectActorType(Class<?> cls) {
+		rejectType(Actor.class, cls, new IllegalArgumentException("Type of or subtype of Actor is unaccepted"));
+	}
 }

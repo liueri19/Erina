@@ -40,10 +40,6 @@ public abstract class Competitor
 	// delegations
 	////////////////////////////////
 	/*
-	getIntersectingObjects
-	getNeighbours
-	getObjectsAtOffset
-	getObjectsInRange
 	getOneIntersectingObject
 	getOneObjectAtOffset
 	getWorld
@@ -54,13 +50,47 @@ public abstract class Competitor
 	 */
 
 	/** @see	Actor#addedToWorld(World)  */
-	protected void addedToWorld(World world) {
-		validate(); getActor().addedToWorld(world);
-	}
+	protected void addedToWorld(World world) {}	// optionally overridden by subclasses
 
 	/** @see	Actor#getImage()  */
 	public final GreenfootImage getImage() {
 		validate(); return getActor().getImage();
+	}
+
+	/** @see	Actor#getIntersectingObjects(Class)  */
+	protected final <T> List<T> getIntersectingObjects(Class<T> cls) {
+		validate();
+		Erina.rejectActorType(cls);
+		return Erina.getObjectsUsing(
+				c -> getActor().getIntersectingObjectsSuper(c), cls
+		);
+	}
+
+	/** @see	Actor#getNeighbours(int, boolean, Class)  */
+	protected final <T> List<T> getNeighbours(int distance, boolean diagonal, Class<T> cls) {
+		validate();
+		Erina.rejectActorType(cls);
+		return Erina.getObjectsUsing(
+				c -> getActor().getNeighboursSuper(distance, diagonal, c), cls
+		);
+	}
+
+	/** @see	Actor#getObjectsAtOffset(int, int, Class)  */
+	protected final <T> List<T> getObjectsAtOffset(int dx, int dy, Class<T> cls) {
+		validate();
+		Erina.rejectActorType(cls);
+		return Erina.getObjectsUsing(
+				c -> getActor().getObjectsAtOffsetSuper(dx, dy, c), cls
+		);
+	}
+
+	/** @see	Actor#getObjectsInRange(int, Class)  */
+	protected final <T> List<T> getObjectsInRange(int radius, Class<T> cls) {
+		validate();
+		Erina.rejectActorType(cls);
+		return Erina.getObjectsUsing(
+				c -> getActor().getObjectsInRangeSuper(radius, c), cls
+		);
 	}
 
 	/** @see	Actor#setImage(String)  */
@@ -71,11 +101,6 @@ public abstract class Competitor
 	/** @see	Actor#setImage(GreenfootImage)  */
 	public final void setImage(GreenfootImage image) {
 		validate(); getActor().setImage(image);
-	}
-
-	protected <T> List<T> getIntersectingObjects(Class<T> cls) {
-		// TODO
-		return null;
 	}
 
 	/** @see	Actor#getX() */

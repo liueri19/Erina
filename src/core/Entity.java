@@ -10,6 +10,7 @@ package core;
  * @author Eric
  */
 public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>> {
+
 	private A actor;
 	private boolean hasInit;
 

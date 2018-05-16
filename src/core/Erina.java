@@ -84,34 +84,16 @@ public final class Erina extends World {
 	}
 
 
-	/**
-	 * Tests if the {@code testType} is or is subtype of {@code rejectedType}. Throws the
-	 * specified exception if true. This method returns normally if {@code testType} is
-	 * null.
-	 * @param rejectedType	the undesired type
-	 * @param testType		the type being tested
-	 * @param e				the exception to throw
-	 */
-	static void rejectType(Class<?> rejectedType, Class<?> testType, RuntimeException e) {
-		if (testType != null && rejectedType.isAssignableFrom(testType))
-			throw e;
+
+	static <T extends Entity> List<T> getEntitiesUsing(
+			Function<Class<? extends EntityActor>, List<? extends EntityActor>> getter,
+			Class<T> targetType) {
+		return getter.apply(EntityActor.class).stream()
+				.map(EntityActor::getEntity)
+				.filter(e -> targetType.isAssignableFrom(e.getClass()))
+				.map(e -> (T) e)
+				.collect(Collectors.toList());
 	}
-
-
-//	static <T> List<T> getObjectsUsing(Function<Class<T>, List<T>> function, Class<T> type) {
-//		if (Entity.class.isAssignableFrom(type)) {
-//			// get all objects of type EntityActors, convert list to stream
-//			return function.apply(type).stream()
-//					// map actors to Entities
-//					.map(EntityActor::getEntity)
-//					// filter for entities the same type or subtype of T
-//					.filter(entity -> cls.isAssignableFrom(entity.getClass()))
-//					// cast to return type T
-//					.map(entity -> (T) entity)
-//					// collect to List
-//					.collect(Collectors.toList());
-//		}
-//	}
 
 
 	/**
@@ -138,7 +120,9 @@ public final class Erina extends World {
 		);
 
 		if (Entity.class.isAssignableFrom(cls)) {
-			// get all objects of type EntityActors, convert list to stream
+			// refactor those?
+
+			// get all objects of type EntityActors
 			return super.getObjects(EntityActor.class).stream()
 					// map actors to Entities
 					.map(EntityActor::getEntity)
@@ -184,7 +168,6 @@ public final class Erina extends World {
 				new IllegalArgumentException("Type of or subtype of Actor is unaccepted")
 		);
 
-
 		if (Entity.class.isAssignableFrom(cls)) {
 					// get all objects of type EntityActors, convert list to stream
 			return super.getObjectsAt(x, y, EntityActor.class).stream()
@@ -203,5 +186,19 @@ public final class Erina extends World {
 
 			return results;
 		}
+	}
+
+
+	/**
+	 * Tests if the {@code testType} is or is subtype of {@code rejectedType}. Throws the
+	 * specified exception if true. This method returns normally if {@code testType} is
+	 * null.
+	 * @param rejectedType	the undesired type
+	 * @param testType		the type being tested
+	 * @param e				the exception to throw
+	 */
+	static void rejectType(Class<?> rejectedType, Class<?> testType, RuntimeException e) {
+		if (testType != null && rejectedType.isAssignableFrom(testType))
+			throw e;
 	}
 }

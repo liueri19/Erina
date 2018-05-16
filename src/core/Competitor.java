@@ -15,7 +15,10 @@ import java.util.List;
  * @version alpha
  * @author Eric
  */
-public abstract class Competitor extends Entity<Competitor, CompetitorActor> implements Maneuverable {
+public abstract class Competitor
+		extends Entity<Competitor, CompetitorActor>
+		implements Maneuverable {
+
 	private final String name;
 
 	/**
@@ -36,12 +39,39 @@ public abstract class Competitor extends Entity<Competitor, CompetitorActor> imp
 	////////////////////////////////
 	// delegations
 	////////////////////////////////
+	/*
+	getIntersectingObjects
+	getNeighbours
+	getObjectsAtOffset
+	getObjectsInRange
+	getOneIntersectingObject
+	getOneObjectAtOffset
+	getWorld
+	getWorldOfType
+	insersects
+	isAtEdge
+	isTouching
+	 */
 
-	/** @see	Actor#addedToWorld(World) */
-	protected void addedToWorld(World world) { validate(); getActor().addedToWorld(world); }
+	/** @see	Actor#addedToWorld(World)  */
+	protected void addedToWorld(World world) {
+		validate(); getActor().addedToWorld(world);
+	}
 
-	/** @see	Actor#getImage() */
-	public final GreenfootImage getImage() { validate(); return getActor().getImage(); }
+	/** @see	Actor#getImage()  */
+	public final GreenfootImage getImage() {
+		validate(); return getActor().getImage();
+	}
+
+	/** @see	Actor#setImage(String)  */
+	public final void setImage(String fileName) {
+		validate(); getActor().setImage(fileName);
+	}
+
+	/** @see	Actor#setImage(GreenfootImage)  */
+	public final void setImage(GreenfootImage image) {
+		validate(); getActor().setImage(image);
+	}
 
 	protected <T> List<T> getIntersectingObjects(Class<T> cls) {
 		// TODO

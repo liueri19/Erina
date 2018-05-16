@@ -93,6 +93,43 @@ public abstract class Competitor
 		);
 	}
 
+	/* getOneIntersectingObject */
+	/* getOneObjectAtOffset */
+
+	/** @see	Actor#getRotation()  */
+	public final int getRotation() { validate(); return getActor().getRotation(); }
+
+	/** @see	Actor#getWorld()  */
+	public final World getWorld() { validate(); return getActor().getWorld(); }
+
+	/* getWorldOfType */
+
+	/** @see	Actor#getX() */
+	public final int getX() { validate(); return getActor().getX(); }
+
+	/** @see	Actor#getY() */
+	public final int getY() { validate(); return getActor().getY(); }
+
+	/**
+	 *
+	 * @param other
+	 * @return
+	 * @see	Actor#intersects(Actor)
+	 */
+	protected final boolean intersects(Competitor other) {
+		validate();
+		return getActor().intersectsSuper(other.getActor());
+	}
+
+	/** @see	Actor#isAtEdge()  */
+	public final boolean isAtEdge() { validate(); return getActor().isAtEdge(); }
+
+	/** @see	Actor#isTouching(Class)  */
+	protected final boolean isTouching(Class<?> cls) {
+		validate();
+		return getActor().isTouchingSuper(cls);
+	}
+
 	/** @see	Actor#setImage(String)  */
 	public final void setImage(String fileName) {
 		validate(); getActor().setImage(fileName);
@@ -102,12 +139,6 @@ public abstract class Competitor
 	public final void setImage(GreenfootImage image) {
 		validate(); getActor().setImage(image);
 	}
-
-	/** @see	Actor#getX() */
-	public final int getX() { validate(); return getActor().getX(); }
-
-	/** @see	Actor#getY() */
-	public final int getY() { validate(); return getActor().getY(); }
 
 	/** @see	Actor#getRotation() */
 	public final int getDirection() { validate(); return getActor().getRotation(); }

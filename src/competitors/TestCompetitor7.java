@@ -1,8 +1,10 @@
-package competitor;
+package competitors;
 
-import core.*;
+import core.Competitor;
+import core.Erina;
+import core.Maneuver;
+import core.Nugget;
 import greenfoot.Greenfoot;
-import greenfoot.GreenfootSound;
 
 import java.util.List;
 
@@ -216,7 +218,7 @@ public class TestCompetitor7 extends Competitor {
 			if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
 				maneuver.move(moveDistance);
 		}
-		
+
 		return maneuver;
 	}
 

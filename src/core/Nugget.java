@@ -1,15 +1,16 @@
 package core;
 
 /**
- * A Nugget is an Entity with some energy.
+ * A Nugget is an Entity with some energy. Competitors may acquire the energy
+ * in a Nugget by touching it.
  *
  * @version alpha
  * @author Eric
  */
-public class Nugget extends Entity<Nugget, NuggetActor> {
+public final class Nugget extends Entity<Nugget, NuggetActor> {
 	private final int nuggetValue;
 
-	public Nugget(Erina world, int value) {
+	Nugget(Erina world, int value) {
 		super(world);
 		nuggetValue = value;
 	}
@@ -20,7 +21,7 @@ public class Nugget extends Entity<Nugget, NuggetActor> {
 	public int getNuggetValue() { return nuggetValue; }
 }
 
-class NuggetActor extends EntityActor<Nugget, NuggetActor> {
+final class NuggetActor extends EntityActor<Nugget, NuggetActor> {
 	NuggetActor(Nugget entity) {
 		super(entity);
 	}

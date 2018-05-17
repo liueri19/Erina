@@ -35,8 +35,9 @@ class CompetitorActor extends EntityActor<Competitor, CompetitorActor> {
 	}
 	<T> List<T> getObjectsAtOffsetSuper(int dx, int dy, Class<T> cls) { return super.getObjectsAtOffset(dx, dy, cls); }
 	<T> List<T> getObjectsInRangeSuper(int radius, Class<T> cls) { return super.getObjectsInRange(radius, cls); }
-	Actor getOneIntersectingObjectSuper(Class<?> cls) { return super.getOneIntersectingObject(cls); }
-	Actor getOneObjectAtOffsetSuper(int dx, int dy, Class<?> cls) { return super.getOneObjectAtOffset(dx, dy, cls); }
+	// what's the point of the Class parameter if we are always returning Actor?
+//	Actor getOneIntersectingObjectSuper(Class<?> cls) { return super.getOneIntersectingObject(cls); }
+//	Actor getOneObjectAtOffsetSuper(int dx, int dy, Class<?> cls) { return super.getOneObjectAtOffset(dx, dy, cls); }
 	boolean intersectsSuper(Actor other) { return super.intersects(other); }
 	boolean isTouchingSuper(Class<?> cls) { return super.isTouching(cls); }
 }

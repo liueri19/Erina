@@ -6,6 +6,7 @@ import greenfoot.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,8 +65,8 @@ public final class Erina extends World {
 	private static final int WORLD_WIDTH = 1024;
 	private static final int WORLD_HEIGHT = 720;
 
-	private static final String BGM_FILENAME = "17 Disc Wars 1.wav";
-	private static final GreenfootSound BGM = new GreenfootSound(BGM_FILENAME);
+//	private static final String BGM_FILENAME = "sounds/17 Disc Wars 1.wav";
+//	private static final GreenfootSound BGM = new GreenfootSound(BGM_FILENAME);
 
 
 	private static final List<Competitor> COMPETITORS = new ArrayList<>();
@@ -80,7 +81,28 @@ public final class Erina extends World {
 
 	@Override
 	public void act() {
-
+//		Actor a = new Actor() {};
+//		a.setImage("images/ball.png");
+//		addObject(a, 0, 0);
+//
+//		System.out.println("get Actor");
+//		System.out.println(super.getObjects(Actor.class));
+//
+//		System.out.println("get String");
+//		System.out.println(super.getObjects(String.class));
+//
+//		System.out.println("get null");
+//		System.out.println(super.getObjects(null));
+//
+//		System.out.println("get null explicit");
+//		System.out.println(super.<Integer>getObjects(null));
+//
+//
+//		System.out.println("====");
+//
+//		Integer i = super.<Integer>getObjects(null).get(0);
+//		System.out.println(i);
+		// getObjects probably using raw Lists internally?
 	}
 
 
@@ -94,6 +116,9 @@ public final class Erina extends World {
 	 * @return	a List of type T's returned by the specified Function
 	 */
 	static <T> List<T> getObjectsUsing(Function<Class<?>, List<?>> getter, Class<T> targetType) {
+		// unlike greenfoot's getObjects, we don't allow null
+		Objects.requireNonNull(targetType);
+
 		// if targetType is or is subtype of Entity
 		if (Entity.class.isAssignableFrom(targetType)) {
 			// apply function to Entity

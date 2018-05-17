@@ -2,6 +2,7 @@ package core;
 
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
+import greenfoot.GreenfootSound;
 import greenfoot.World;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public abstract class Competitor
 	/** The world this Competitor is in. */
 	private final Erina world;
 
+	private GreenfootSound killSound, deathSound, horrorSound, sadisticSound;
+
 	/**
 	 * Constructs a new Competitor with the specified name.
 	 * @param world	the world this competitor is in
@@ -44,18 +47,31 @@ public abstract class Competitor
 	}
 
 
+	/**
+	 * Sets the kill sound to the file specified by the path.
+	 * The kill sound is played when another Competitor is killed by this Competitor.
+	 * @param file	the path to the sound file
+	 */
+	protected final void setKillSound(String file) {
+		killSound = new GreenfootSound(file);
+	}
+	
+	protected final void setDeathSound(String file) {
+		deathSound = new GreenfootSound(file);
+	}
+
+	protected final void setHorrorSound(String file) {
+		horrorSound = new GreenfootSound(file);
+	}
+
+	protected final void setSadisticSound(String file) {
+		sadisticSound = new GreenfootSound(file);
+	}
+
+
 	////////////////////////////////
 	// delegations
 	////////////////////////////////
-	/*
-	getOneIntersectingObject
-	getOneObjectAtOffset
-	getWorld
-	getWorldOfType
-	insersects
-	isAtEdge
-	isTouching
-	 */
 
 	/** @see	Actor#addedToWorld(World)  */
 	protected void addedToWorld(World world) {}	// optionally overridden by subclasses

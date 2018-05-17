@@ -22,7 +22,7 @@ import java.util.List;
  * doManuever() is where you create the secret sauce, but you must follow the
  * stated rules for what is and is not acceptable in doManuever().
  *
- * <p>This class is retrofitted for the Erina. The design and maneuver strategy is implemented by Arnold.
+ * <p>
  */
 public class TestCompetitor4 extends Competitor {
 
@@ -33,18 +33,23 @@ public class TestCompetitor4 extends Competitor {
 
 	public TestCompetitor4(Erina world, String thisName) {
 		super(world, thisName);
-//
-//		// if you want a sound for getting hit or making a hit, you need to
-//		// assign two string variables to the name of the .wav or .mp3 file
-//		// stringSoundHorror and stringSoundSadistic.
-//		// Then the rest of the code below should work.
-//
+
+		// if you want a sound for getting hit or making a hit, you need to
+		// assign two string variables to the name of the .wav or .mp3 file
+		// stringSoundHorror and stringSoundSadistic.
+		// Then the rest of the code below should work.
+
 //		stringSoundHorror = "Gasp+3.wav";
 //		stringSoundSadistic = "Bite+3.wav";
 //		stringSoundKill = "Laugh+1.wav";
 //		stringSoundGotKilled = "Scream+Female+4.wav";
-//
-//
+
+		setHorrorSound("sounds/Gasp+3.wav");
+		setSadisticSound("sounds/Bite+3.wav");
+		setKillSound("sounds/Laugh+1.wav");
+		setDeathSound("sounds/Scream+Female+4.wav");
+
+
 //		if (stringSoundHorror != null) {
 //			soundHorror = new GreenfootSound(stringSoundHorror);
 //		}

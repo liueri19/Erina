@@ -19,6 +19,8 @@ public abstract class Competitor
 		extends Entity<Competitor, CompetitorActor>
 		implements Maneuverable {
 
+	public static final int EDGE_MARGIN = 10, HIT_DAMAGE = 5, INITIAL_ENERGY_LEVEL = 500;
+
 	/** The identifier of this Competitor. */
 	private final String name;
 
@@ -136,7 +138,7 @@ public abstract class Competitor
 	public final int getRotation() { validate(); return getActor().getRotation(); }
 
 	/** @see	Actor#getWorld()  */
-	public final World getWorld() { validate(); return world; }
+	public final Erina getWorld() { validate(); return world; }
 
 	/* getWorldOfType */
 

@@ -1,6 +1,7 @@
 package competitors;
 
 import core.Competitor;
+import core.Erina;
 import core.Maneuver;
 import greenfoot.Greenfoot;
 
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Class TestCompetitor4
  *
- * @author Brian Arnold
+ * @author Brian Arnold, Eric
  * @version April 2017
  * <p>
  * This is a limited-functionality example of an instance of a Competitor class.
@@ -20,6 +21,8 @@ import java.util.List;
  * <p>
  * doManuever() is where you create the secret sauce, but you must follow the
  * stated rules for what is and is not acceptable in doManuever().
+ *
+ * <p>This class is retrofitted for the Erina. The design and maneuver strategy is implemented by Arnold.
  */
 public class TestCompetitor4 extends Competitor {
 
@@ -28,8 +31,8 @@ public class TestCompetitor4 extends Competitor {
 	int turnCountDown;                                  // Don't want to turn every act().  Space it out.
 	private int moveDistance = 3;                       // Default number of cells to move each time
 
-	public TestCompetitor4(String thisName) {
-		super(thisName);
+	public TestCompetitor4(Erina world, String thisName) {
+		super(world, thisName);
 //
 //		// if you want a sound for getting hit or making a hit, you need to
 //		// assign two string variables to the name of the .wav or .mp3 file
@@ -69,6 +72,7 @@ public class TestCompetitor4 extends Competitor {
 	public Maneuver doManeuver() {
 //		super.doManeuver();
 
+		final Maneuver maneuver = new Maneuver(this);
 
 		int newNum;
 
@@ -102,9 +106,9 @@ public class TestCompetitor4 extends Competitor {
 		if ((xNow <= EDGE_MARGIN) || (yNow <= EDGE_MARGIN) || (xNow >= worldWidth - EDGE_MARGIN) || (yNow >= worldHeight - EDGE_MARGIN)) {
 			// move to the middle...
 			//legalTurnTowards((worldWidth/2), (worldHeight/2));
-			turnTowards((worldWidth / 2), (worldHeight / 2));
+			maneuver.turnTo((worldWidth / 2), (worldHeight / 2));
 			newDistance = Greenfoot.getRandomNumber(100);     // get a new distance
-			legalMove(newDistance);
+			maneuver.move(newDistance);
 		}
 		else if (listInRange.size() > 0) {
 			targetCompetitor = (Competitor) listInRange.get(0);        // get the first Actor in the list
@@ -128,22 +132,24 @@ public class TestCompetitor4 extends Competitor {
 			if (newY < 0) newY = 0;
 			if (newY > worldHeight - 50) newY = worldHeight - 50;
 
-			legalTurnTowards(newX, newY);
+			maneuver.turnTo(newX, newY);
 			newDistance = Greenfoot.getRandomNumber(10);     // get a new distance
-			legalMove(newDistance);
+			maneuver.move(newDistance);
 
 		}
 		else if (turnCountDown <= 0) {
 			newNum = Greenfoot.getRandomNumber(181) - 30;  // within 90 degrees left or right
-			legalTurn(newNum);
+			maneuver.turn(newNum);
 			//turn(newNum);
 			turnCountDown = Greenfoot.getRandomNumber(10);// renew turn counter
 			newDistance = Greenfoot.getRandomNumber(10);     // get a new distance
-			legalMove(newDistance);
+			maneuver.move(newDistance);
 		}
 		// Turns are complete, now we can move in the direction we turned...
 		// Go!
 
+		// return maneuver, submit for execution
+		return maneuver;
 	}
 
 

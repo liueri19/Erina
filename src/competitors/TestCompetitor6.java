@@ -1,3 +1,9 @@
+package competitors;
+
+import core.Competitor;
+import core.Erina;
+import core.Maneuver;
+import core.Nugget;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootSound;
 
@@ -25,12 +31,13 @@ public class TestCompetitor6 extends Competitor {
 	private static final int ENERGY_NORMAL_RESERVE = NORMAL_MOVE_DISTANCE * 4;// Used in logic for energy management
 	private int moveDistance = NORMAL_MOVE_DISTANCE;        // Default number of cells to move each time
 	private static final int SEEK_RANGE = 450;              // Used in logic to learn who is out there...
+	private static final int EDGE_MARGIN = 10;
 	int turnCountDown;                                      // Don't want to turn every act().  Space it out.
 	private int justInflictedHitCooldown = 10;
 
 
-	public TestCompetitor6(String thisName) {
-		super(thisName);
+	public TestCompetitor6(Erina world, String thisName) {
+		super(world, thisName);
 
 
 		// if you want a sound for getting hit or making a hit, you need to
@@ -38,30 +45,34 @@ public class TestCompetitor6 extends Competitor {
 		// stringSoundHorror and stringSoundSadistic.
 		// Then the rest of the code below should work.
 
-		stringSoundHorror = "Yell+3.wav";
-		stringSoundSadistic = "PUNCH.wav";
-		stringSoundKill = "GotchaHah.wav";
-		stringSoundGotKilled = "Scream+5.wav";
-		//stringSoundGotNugget = "Tambourine1.wav";
-
-
-		if (stringSoundHorror != null) {
-			soundHorror = new GreenfootSound(stringSoundHorror);
-		}
-		if (stringSoundSadistic != null) {
-			soundSadistic = new GreenfootSound(stringSoundSadistic);
-		}
-		if (stringSoundKill != null) {
-			soundKill = new GreenfootSound(stringSoundKill);
-		}
-		if (stringSoundGotKilled != null) {
-			soundGotKilled = new GreenfootSound(stringSoundGotKilled);
-		}
+//		stringSoundHorror = "Yell+3.wav";
+//		stringSoundSadistic = "PUNCH.wav";
+//		stringSoundKill = "GotchaHah.wav";
+//		stringSoundGotKilled = "Scream+5.wav";
+//		//stringSoundGotNugget = "Tambourine1.wav";
+//
+//
+//		if (stringSoundHorror != null) {
+//			soundHorror = new GreenfootSound(stringSoundHorror);
+//		}
+//		if (stringSoundSadistic != null) {
+//			soundSadistic = new GreenfootSound(stringSoundSadistic);
+//		}
+//		if (stringSoundKill != null) {
+//			soundKill = new GreenfootSound(stringSoundKill);
+//		}
+//		if (stringSoundGotKilled != null) {
+//			soundGotKilled = new GreenfootSound(stringSoundGotKilled);
+//		}
 		//if (stringSoundGotNugget != null)
 		//{
 		//    soundGotNugget =new GreenfootSound(stringSoundGotNugget);
 		//}
 
+		setHorrorSound("sounds/Yell+3.wav");
+		setSadisticSound("sounds/PUNCH.wav");
+		setKillSound("sounds/GotchaHah.wav");
+		setDeathSound("sounds/Scream+5.wav");
 
 	}
 
@@ -73,9 +84,11 @@ public class TestCompetitor6 extends Competitor {
 	 *
 	 * Follow the rules on what is and is not legal to use in thie method.
 	 */
-	public void doManuever() {
-		super.doManuever();
+	@Override
+	public Maneuver doManeuver() {
+//		super.doManuever();
 
+		final Maneuver maneuver = new Maneuver(this);
 
 		int newNum;
 
@@ -103,8 +116,8 @@ public class TestCompetitor6 extends Competitor {
 		// If not, move randomly (seek).
 
 		turnCountDown--;
-		if (energyLevel < ENERGY_NORMAL_RESERVE)
-			return;      // don't even attempt to move or turn unless we have lots of energy
+		if (getEnergyLevel() < ENERGY_NORMAL_RESERVE)
+			return maneuver;      // don't even attempt to move or turn unless we have lots of energy
 
 		if (listInRangeNugget.size() > 0) {
 			//targetCompetitor = (Competitor) listInRange.get(0);     // get the [unlucky] first Actor
@@ -117,11 +130,11 @@ public class TestCompetitor6 extends Competitor {
 			int variationX = Greenfoot.getRandomNumber(30) - 15;
 			int variationY = Greenfoot.getRandomNumber(30) - 15;
 
-			legalTurnTowards(targetX + variationX, targetY + variationY);
+			maneuver.turnTo(targetX + variationX, targetY + variationY);
 
 			newDistance = Greenfoot.getRandomNumber(6);             // ...a  random distance, hopefully...
-			if (energyLevel > ENERGY_NORMAL_RESERVE)
-				legalMove(newDistance);                             // If we have enough energy, legalMove()
+			if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
+				maneuver.move(newDistance);                             // If we have enough energy, legalMove()
 			// will allow it.  Otherwise we have
 			// to wait another cycle or more...
 			// Reset this cooldown timer if we're going for Nuggets...
@@ -131,10 +144,10 @@ public class TestCompetitor6 extends Competitor {
 		else if (justInflictedHitCooldown > 0) {
 			justInflictedHitCooldown--;
 			//turnTowards((worldWidth/2), (worldHeight/2));
-			legalTurnTowards((worldWidth / 2), (worldHeight / 2));
-			if (energyLevel > ENERGY_NORMAL_RESERVE)
-				legalMove(5);
-			return;
+			maneuver.turnTo((worldWidth / 2), (worldHeight / 2));
+			if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
+				maneuver.move(5);
+			return maneuver;
 		}
 		else if (listInRange.size() > 0) {
 			//targetCompetitor = (Competitor) listInRange.get(0);     // get the [unlucky] first Actor
@@ -155,19 +168,20 @@ public class TestCompetitor6 extends Competitor {
 				//int variationY = Greenfoot.getRandomNumber(90)-45;
 				//legalTurnTowards(targetX+300, targetY+300);
 				//legalTurnTowards((getRotation() + 360) - 180);
-				setRotation((getRotation() + 360) - 180);
+//				setRotation((getRotation() + 360) - 180);
+				maneuver.turn(180);
 			}
 			else {
 
 				int variationX = Greenfoot.getRandomNumber(30) - 15;
 				int variationY = Greenfoot.getRandomNumber(30) - 15;
 
-				legalTurnTowards(targetX + variationX, targetY + variationY);
+				maneuver.turnTo(targetX + variationX, targetY + variationY);
 
 
 			}
 			newDistance = Greenfoot.getRandomNumber(6);             // ...a  random distance, hopefully...            if (energyLevel > ENERGY_NORMAL_RESERVE)
-			legalMove(newDistance);                             // If we have enough energy, legalMove()
+			maneuver.move(newDistance);                             // If we have enough energy, legalMove()
 			// will allow it.  Otherwise we have
 
 
@@ -187,22 +201,24 @@ public class TestCompetitor6 extends Competitor {
 			// if we're at one of the edges, turn towards the middle of the world...
 			if ((xNow <= EDGE_MARGIN) || (yNow <= EDGE_MARGIN) || (xNow >= worldWidth - EDGE_MARGIN) || (yNow >= worldHeight - EDGE_MARGIN)) {
 				// turn if we have energy
-				legalTurnTowards((worldWidth / 2), (worldHeight / 2));
+				maneuver.turnTo((worldWidth / 2), (worldHeight / 2));
 				//turnTowards((worldWidth/2), (worldHeight/2));
 
 			}
 			else if (turnCountDown <= 0) {
 				// we're not at the edge, and the turning countdown has expired, so turn if we need to
 				newNum = Greenfoot.getRandomNumber(31) - 15;
-				legalTurn(newNum);
+				maneuver.turn(newNum);
 				//turn(newNum);
 				turnCountDown = Greenfoot.getRandomNumber(10);
 			}
 
 			// we've figured out which direction to turn, now figure out how much to move..
-			if (energyLevel > ENERGY_NORMAL_RESERVE)
-				legalMove(moveDistance);
+			if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
+				maneuver.move(moveDistance);
 		}
+
+		return maneuver;
 	}
 
 

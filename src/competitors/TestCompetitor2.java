@@ -1,7 +1,9 @@
+package competitors;
+
 import core.Competitor;
+import core.Erina;
 import core.Maneuver;
 import greenfoot.Greenfoot;
-import greenfoot.GreenfootSound;
 
 /**
  * Class TestCompetitor2
@@ -23,10 +25,11 @@ public class TestCompetitor2 extends Competitor {
 	private int moveDistance = 3;                       // Default number of cells to move each time
 	private static final int ENERGY_NORMAL_RESERVE = 10;    // Used in logic for energy management
 	private static final int SEEK_RANGE = 450;              // Used in logic to learn who is out there...
+	private static final int EDGE_MARGIN = 10;
 	int turnCountDown;                                  // Don't want to turn every act().  Space it out.
 
-	public TestCompetitor2(String thisName) {
-		super(thisName);
+	public TestCompetitor2(Erina world, String thisName) {
+		super(world, thisName);
 
 
 		// if you want a sound for getting hit or making a hit, you need to
@@ -34,24 +37,29 @@ public class TestCompetitor2 extends Competitor {
 		// stringSoundHorror and stringSoundSadistic.
 		// Then the rest of the code below should work.
 
-		stringSoundHorror = "Slurping+1.wav";
-		stringSoundSadistic = "Smirk+1.wav";
-		stringSoundKill = "Yell+Male+Wahhh.wav";
-		stringSoundGotKilled = "Scream+14.wav";
+		setHorrorSound("sounds/Slurping+1.wav");
+		setSadisticSound("sounds/Smirk+1.wav");
+		setKillSound("sounds/Yell+Male+Wahhh.wav");
+		setDeathSound("sounds/Scream+14.wav");
 
-
-		if (stringSoundHorror != null) {
-			soundHorror = new GreenfootSound(stringSoundHorror);
-		}
-		if (stringSoundSadistic != null) {
-			soundSadistic = new GreenfootSound(stringSoundSadistic);
-		}
-		if (stringSoundKill != null) {
-			soundKill = new GreenfootSound(stringSoundKill);
-		}
-		if (stringSoundGotKilled != null) {
-			soundGotKilled = new GreenfootSound(stringSoundGotKilled);
-		}
+//		stringSoundHorror = "Slurping+1.wav";
+//		stringSoundSadistic = "Smirk+1.wav";
+//		stringSoundKill = "Yell+Male+Wahhh.wav";
+//		stringSoundGotKilled = "Scream+14.wav";
+//
+//
+//		if (stringSoundHorror != null) {
+//			soundHorror = new GreenfootSound(stringSoundHorror);
+//		}
+//		if (stringSoundSadistic != null) {
+//			soundSadistic = new GreenfootSound(stringSoundSadistic);
+//		}
+//		if (stringSoundKill != null) {
+//			soundKill = new GreenfootSound(stringSoundKill);
+//		}
+//		if (stringSoundGotKilled != null) {
+//			soundGotKilled = new GreenfootSound(stringSoundGotKilled);
+//		}
 
 
 	}
@@ -65,8 +73,8 @@ public class TestCompetitor2 extends Competitor {
 	 * Follow the rules on what is and is not legal to use in thie method.
 	 */
 	@Override
-	public Maneuver doManuever() {
-		super.doManuever();
+	public Maneuver doManeuver() {
+		final Maneuver maneuver = new Maneuver(this);
 
 		int newNum;
 		int worldHeight;        // need world dimensions to help with determining coordinates
@@ -92,17 +100,17 @@ public class TestCompetitor2 extends Competitor {
 			newNum = Greenfoot.getRandomNumber(360);    // some random degrees...
 
 
-			legalTurn(newNum);
+			maneuver.turn(newNum);
 
 		}
 		else if (turnCountDown <= 0) {
 			newNum = Greenfoot.getRandomNumber(181) - 90;  // within 90 degrees left or right
-			legalTurn(newNum);
+			maneuver.turn(newNum);
 			turnCountDown = Greenfoot.getRandomNumber(10);  // renew turn counter
 		}
 
-		legalMove(moveDistance);
+		maneuver.move(moveDistance);
+
+		return maneuver;
 	}
-
-
 }

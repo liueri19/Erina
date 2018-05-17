@@ -21,11 +21,12 @@ import java.util.List;
  * <p>
  * doManuever() is where you create the secret sauce, but you must follow the
  * stated rules for what is and is not acceptable in doManuever().
- *
+ * <p>
  * <p>
  */
 public class TestCompetitor4 extends Competitor {
 
+	private static final int EDGE_MARGIN = 10;
 	private static final int ENERGY_NORMAL_RESERVE = 10;    // Used in logic for energy management
 	private static final int SEEK_RANGE = 150;              // Used in logic to learn who is out there...
 	int turnCountDown;                                  // Don't want to turn every act().  Space it out.

@@ -1,3 +1,8 @@
+package competitors;
+
+import core.Competitor;
+import core.Erina;
+import core.Maneuver;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootSound;
 
@@ -27,34 +32,41 @@ public class TestCompetitor5 extends Competitor {
 	private static final int MED_SEEK_RANGE = 400;              // Used in logic to learn who is out there...
 	private static final int LONG_SEEK_RANGE = 750;              // Used in logic to learn who is out there...
 	private static final int GETAWAY_DISTANCE = 160;
+	private static final int EDGE_MARGIN = 10;
 	int turnCountDown;                                      // Don't want to turn every act().  Space it out.
 	private int justInflictedHitCooldown = 10;
 
-	public TestCompetitor5(String thisName) {
-		super(thisName);
+	public TestCompetitor5(Erina world, String thisName) {
+		super(world, thisName);
 
 
 		// if you want a sound for getting hit or making a hit, you need to
 		// assign two string variables to the name of the .wav or .mp3 file
 		// stringSoundHorror and stringSoundSadistic.
 		// Then the rest of the code below should work.
-		stringSoundHorror = "Gasp+1.wav";
-		stringSoundSadistic = "Chomp+1.wav";
-		stringSoundKill = "attack.wav";
-		stringSoundGotKilled = "Scream+8.wav";
+//		stringSoundHorror = "Gasp+1.wav";
+//		stringSoundSadistic = "Chomp+1.wav";
+//		stringSoundKill = "attack.wav";
+//		stringSoundGotKilled = "Scream+8.wav";
+//
+//		if (stringSoundHorror != null) {
+//			soundHorror = new GreenfootSound(stringSoundHorror);
+//		}
+//		if (stringSoundSadistic != null) {
+//			soundSadistic = new GreenfootSound(stringSoundSadistic);
+//		}
+//		if (stringSoundKill != null) {
+//			soundKill = new GreenfootSound(stringSoundKill);
+//		}
+//		if (stringSoundGotKilled != null) {
+//			soundGotKilled = new GreenfootSound(stringSoundGotKilled);
+//		}
 
-		if (stringSoundHorror != null) {
-			soundHorror = new GreenfootSound(stringSoundHorror);
-		}
-		if (stringSoundSadistic != null) {
-			soundSadistic = new GreenfootSound(stringSoundSadistic);
-		}
-		if (stringSoundKill != null) {
-			soundKill = new GreenfootSound(stringSoundKill);
-		}
-		if (stringSoundGotKilled != null) {
-			soundGotKilled = new GreenfootSound(stringSoundGotKilled);
-		}
+
+		setHorrorSound("sounds/Gasp+1.wav");
+		setSadisticSound("sounds/Chomp+1.wav");
+		setKillSound("sounds/attack.wav");
+		setDeathSound("sounds/Scream+8.wav");
 
 
 	}
@@ -67,8 +79,11 @@ public class TestCompetitor5 extends Competitor {
 	 *
 	 * Follow the rules on what is and is not legal to use in thie method.
 	 */
-	public void doManuever() {
-		super.doManuever();
+	@Override
+	public Maneuver doManeuver() {
+//		super.doManuever();
+
+		final Maneuver maneuver = new Maneuver(this);
 
 		int newNum;
 
@@ -87,9 +102,8 @@ public class TestCompetitor5 extends Competitor {
 		if (justInflictedHitCooldown > 0) {
 			justInflictedHitCooldown--;
 			//turnTowards((worldWidth/2), (worldHeight/2));
-			legalTurnTowards((worldWidth / 2), (worldHeight / 2));
-			legalMove(10);
-			return;
+			return maneuver.turnTo((worldWidth / 2), (worldHeight / 2))
+					.move(10);
 		}
 
 		List<Competitor> listInRange;   // a list of all the Actor objects within range
@@ -106,7 +120,7 @@ public class TestCompetitor5 extends Competitor {
 			//System.out.printf("listInRange.size() is %d,\n", listInRange.size());
 			targetX = targetCompetitor.getX();                      // Get its x coordinate
 			targetY = targetCompetitor.getY();                      // Get its y coordinate
-			legalTurnTowards(targetX, targetY);                     // Got its location, now go after 'em!
+			maneuver.turnTo(targetX, targetY);                     // Got its location, now go after 'em!
 			//turnTowards(targetX, targetY);
 
 			// where are we now?
@@ -118,7 +132,7 @@ public class TestCompetitor5 extends Competitor {
 			newDistance = (int) (Math.sqrt((dx * dx) + (dy * dy)));
 
 			//newDistance = Greenfoot.getRandomNumber(6);             // ...a  random distance, hopefully...
-			legalMove(newDistance);                                 // If we have enough energy, legalMove()
+			maneuver.move(newDistance);                                 // If we have enough energy, legalMove()
 			// will allow it.  Otherwise we have
 			// to wait another cycle or more...
 			// should have been a hit!
@@ -144,19 +158,19 @@ public class TestCompetitor5 extends Competitor {
 			// if we're at one of the edges, turn towards the middle of the world...
 			if ((xNow <= EDGE_MARGIN) || (yNow <= EDGE_MARGIN) || (xNow >= worldWidth - EDGE_MARGIN) || (yNow >= worldHeight - EDGE_MARGIN)) {
 				// turn if we have energy
-				legalTurnTowards((worldWidth / 2), (worldHeight / 2));
+				maneuver.turnTo((worldWidth / 2), (worldHeight / 2));
 				//turnTowards((worldWidth/2), (worldHeight/2));
-				if (energyLevel > ENERGY_NORMAL_RESERVE)
-					legalMove(moveDistance);
+				if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
+					maneuver.move(moveDistance);
 
 			}
 			else if (turnCountDown <= 0) {
 				// we're not at the edge, and the turning countdown has expired, so turn if we need to
 				newNum = Greenfoot.getRandomNumber(181) - 90;
-				legalTurn(newNum);
+				maneuver.turn(newNum);
 				//turn(newNum);
-				if (energyLevel > ENERGY_NORMAL_RESERVE)
-					legalMove(moveDistance);
+				if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
+					maneuver.move(moveDistance);
 
 				turnCountDown = 40;    // reset the turn counter
 			}
@@ -165,6 +179,8 @@ public class TestCompetitor5 extends Competitor {
 			//if (energyLevel > ENERGY_NORMAL_RESERVE)
 			//    legalMove(moveDistance);
 		}
+
+		return maneuver;
 	}
 
 

@@ -19,13 +19,19 @@ public abstract class Competitor
 		extends Entity<Competitor, CompetitorActor>
 		implements Maneuverable {
 
+	/** The identifier of this Competitor. */
 	private final String name;
+
+	/** The world this Competitor is in. */
+	private final Erina world;
 
 	/**
 	 * Constructs a new Competitor with the specified name.
+	 * @param world	the world this competitor is in
 	 * @param name	the name of this Competitor
 	 */
-	public Competitor(String name) {
+	public Competitor(Erina world, String name) {
+		this.world = world;
 		this.name = name;
 	}
 
@@ -57,7 +63,10 @@ public abstract class Competitor
 		validate(); return getActor().getImage();
 	}
 
-	/** @see	Actor#getIntersectingObjects(Class)  */
+	/**
+	 * Unlike the greenfoot counterpart, this method does not accept null.
+	 * @see	Actor#getIntersectingObjects(Class)
+	 */
 	protected final <T> List<T> getIntersectingObjects(Class<T> cls) {
 		validate();
 		Erina.rejectActorType(cls);
@@ -66,7 +75,10 @@ public abstract class Competitor
 		);
 	}
 
-	/** @see	Actor#getNeighbours(int, boolean, Class)  */
+	/**
+	 * Unlike the greenfoot counterpart, this method does not accept null.
+	 * @see	Actor#getNeighbours(int, boolean, Class)
+	 */
 	protected final <T> List<T> getNeighbours(int distance, boolean diagonal, Class<T> cls) {
 		validate();
 		Erina.rejectActorType(cls);
@@ -75,7 +87,10 @@ public abstract class Competitor
 		);
 	}
 
-	/** @see	Actor#getObjectsAtOffset(int, int, Class)  */
+	/**
+	 * Unlike the greenfoot counterpart, this method does not accept null.
+	 * @see	Actor#getObjectsAtOffset(int, int, Class)
+	 */
 	protected final <T> List<T> getObjectsAtOffset(int dx, int dy, Class<T> cls) {
 		validate();
 		Erina.rejectActorType(cls);
@@ -84,7 +99,10 @@ public abstract class Competitor
 		);
 	}
 
-	/** @see	Actor#getObjectsInRange(int, Class)  */
+	/**
+	 * Unlike the greenfoot counterpart, this method does not accept null.
+	 * @see	Actor#getObjectsInRange(int, Class)
+	 */
 	protected final <T> List<T> getObjectsInRange(int radius, Class<T> cls) {
 		validate();
 		Erina.rejectActorType(cls);
@@ -93,14 +111,32 @@ public abstract class Competitor
 		);
 	}
 
-	/* getOneIntersectingObject */
-	/* getOneObjectAtOffset */
+	/**
+	 * Returns an object of the specified type that intersects this Competitor, or null if
+	 * no object intersects this Competitor.
+	 * Unlike the greenfoot counterpart, this method does not accept null.
+	 * @see	Actor#getOneIntersectingObject(Class)
+	 */
+	protected final <T> T getOneIntersectingObject(Class<T> cls) {
+		final List<T> objects = getIntersectingObjects(cls);
+		return objects.isEmpty() ? null : objects.get(0);
+	}
+
+	/**
+	 * Returns an object of the specified type that is located at the specified cell.
+	 * Unlike the greenfoot counterpart, this method does not accept null.
+	 * @see	Actor#getOneObjectAtOffset(int, int, Class)
+	 */
+	protected final <T> T getOneObjectAtOffset(int dx, int dy, Class<T> cls) {
+		final List<T> objects = getObjectsAtOffset(dx, dy, cls);
+		return objects.isEmpty() ? null : objects.get(0);
+	}
 
 	/** @see	Actor#getRotation()  */
 	public final int getRotation() { validate(); return getActor().getRotation(); }
 
 	/** @see	Actor#getWorld()  */
-	public final World getWorld() { validate(); return getActor().getWorld(); }
+	public final World getWorld() { validate(); return world; }
 
 	/* getWorldOfType */
 
@@ -111,12 +147,12 @@ public abstract class Competitor
 	public final int getY() { validate(); return getActor().getY(); }
 
 	/**
-	 *
-	 * @param other
-	 * @return
+	 * Checks whether this Competitor intersects with the specified Entity.
+	 * @param other	the Entity to check for intersection with
+	 * @return	true if the objects intersect, false otherwise
 	 * @see	Actor#intersects(Actor)
 	 */
-	protected final boolean intersects(Competitor other) {
+	protected final boolean intersects(Entity<?, ?> other) {
 		validate();
 		return getActor().intersectsSuper(other.getActor());
 	}
@@ -142,6 +178,9 @@ public abstract class Competitor
 
 	/** @see	Actor#getRotation() */
 	public final int getDirection() { validate(); return getActor().getRotation(); }
+
+	/** Returns the identifier of this Competitor. */
+	public final String getName() { return name; }
 
 
 	@Override

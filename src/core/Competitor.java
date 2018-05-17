@@ -20,7 +20,10 @@ public abstract class Competitor
 		extends Entity<Competitor, CompetitorActor>
 		implements Maneuverable {
 
-	public static final int EDGE_MARGIN = 10, HIT_DAMAGE = 5, INITIAL_ENERGY_LEVEL = 500;
+	/** The amount of damage each collision deals. */
+	public static final int HIT_DAMAGE = 5;
+
+	private GreenfootSound killSound, deathSound, horrorSound, sadisticSound;
 
 	/** The identifier of this Competitor. */
 	private final String name;
@@ -28,7 +31,11 @@ public abstract class Competitor
 	/** The world this Competitor is in. */
 	private final Erina world;
 
-	private GreenfootSound killSound, deathSound, horrorSound, sadisticSound;
+	private static final int INITIAL_ENERGY_LEVEL = 500;
+
+	/** Amount of energy this competitor has. */
+	private int energyLevel = INITIAL_ENERGY_LEVEL;
+
 
 	/**
 	 * Constructs a new Competitor with the specified name.
@@ -41,10 +48,21 @@ public abstract class Competitor
 	}
 
 
-	private void validate() {
-		if (getActor() == null)
-			throw new IllegalStateException("Competitor not properly initialized");
+	/**
+	 * Modifies the energy level of this Competitor by the specified amount. Negative
+	 * values can be used to remove energy.
+	 * @param amount	the amount of energy to add to this Competitor
+	 * @return	current energy level after modification
+	 */
+	final int changeEnergy(int amount) {
+		return energyLevel += amount;
 	}
+
+	/**
+	 * Gets the amount of energy this Competitor currently has.
+	 * @return	the current energy level
+	 */
+	public final int getEnergyLevel() { return energyLevel; }
 
 
 	/**
@@ -55,19 +73,60 @@ public abstract class Competitor
 	protected final void setKillSound(String file) {
 		killSound = new GreenfootSound(file);
 	}
-	
+
+	final void playKillSound() {
+		if (killSound != null && !killSound.isPlaying())
+			killSound.play();
+	}
+
+	/**
+	 * Sets the death sound to the file specified by the path.
+	 * The death sound is played when this Competitor is killed.
+	 * @param file	the path to the sound file
+	 */
 	protected final void setDeathSound(String file) {
 		deathSound = new GreenfootSound(file);
 	}
 
+	final void playDeathSound() {
+		if (deathSound != null && !deathSound.isPlaying())
+			deathSound.play();
+	}
+
+	/**
+	 * Sets the horror sound to the file specified by the path.
+	 * The horror sound is played when this Competitor is being hit.
+	 * @param file	the path to the sound file
+	 */
 	protected final void setHorrorSound(String file) {
 		horrorSound = new GreenfootSound(file);
 	}
 
+	final void playHorrorSound() {
+		if (horrorSound != null && !horrorSound.isPlaying())
+			horrorSound.play();
+	}
+
+	/**
+	 * Sets the sadistic sound to the file specified by the path.
+	 * The sadistic sound is played when this Competitor sadistically consumes something.
+	 * @param file	the path to the sound file
+	 */
 	protected final void setSadisticSound(String file) {
 		sadisticSound = new GreenfootSound(file);
 	}
 
+	final void playSadisticSound() {
+		if (sadisticSound != null && !sadisticSound.isPlaying())
+			sadisticSound.play();
+	}
+
+
+
+	private void validate() {
+		if (getActor() == null)
+			throw new IllegalStateException("Competitor not properly initialized");
+	}
 
 	////////////////////////////////
 	// delegations
@@ -155,8 +214,6 @@ public abstract class Competitor
 
 	/** @see	Actor#getWorld()  */
 	public final Erina getWorld() { validate(); return world; }
-
-	/* getWorldOfType */
 
 	/** @see	Actor#getX() */
 	public final int getX() { validate(); return getActor().getX(); }

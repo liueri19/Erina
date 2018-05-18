@@ -31,6 +31,8 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 	 */
 	public int getIterationsLeft() { return iterationsLeft; }
 
+	public boolean hasTimedOut() { return iterationsLeft <= 0; }
+
 	/**
 	 * Updates this Sauce by decrement the amount of iterations left by 1.
 	 * @return	true if this Sauce has not expired, false otherwise

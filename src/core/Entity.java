@@ -41,8 +41,8 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		throw new IllegalStateException("Cannot re-initialize Entity");
 	}
 
+	/** Gets the Actor bound to this Entity. */
 	A getActor() { return actor; }
-
 
 
 	private void validate() {

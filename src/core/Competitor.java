@@ -66,10 +66,8 @@ public abstract class Competitor
 		killSound = (file == null) ? null : new GreenfootSound(file);
 	}
 
-	final void playKillSound() {
-		if (killSound != null && !killSound.isPlaying())
-			killSound.play();
-	}
+	/** Plays the kill sound if it exists and is not already playing. */
+	public final void playKillSound() { Erina.tryPlaySound(killSound); }
 
 	/**
 	 * Sets the death sound to the file specified by the path.
@@ -80,10 +78,8 @@ public abstract class Competitor
 		deathSound = (file == null) ? null : new GreenfootSound(file);
 	}
 
-	final void playDeathSound() {
-		if (deathSound != null && !deathSound.isPlaying())
-			deathSound.play();
-	}
+	/** Plays the death sound if it exists and is not already playing. */
+	public final void playDeathSound() { Erina.tryPlaySound(deathSound); }
 
 	/**
 	 * Sets the horror sound to the file specified by the path.
@@ -94,10 +90,8 @@ public abstract class Competitor
 		horrorSound = (file == null) ? null : new GreenfootSound(file);
 	}
 
-	final void playHorrorSound() {
-		if (horrorSound != null && !horrorSound.isPlaying())
-			horrorSound.play();
-	}
+	/** Plays the horror sound if it exists and is not already playing. */
+	public final void playHorrorSound() { Erina.tryPlaySound(horrorSound); }
 
 	/**
 	 * Sets the sadistic sound to the file specified by the path.
@@ -108,10 +102,8 @@ public abstract class Competitor
 		sadisticSound = (file == null) ? null : new GreenfootSound(file);
 	}
 
-	final void playSadisticSound() {
-		if (sadisticSound != null && !sadisticSound.isPlaying())
-			sadisticSound.play();
-	}
+	/** Plays the sadistic sound if it exists and is not already playing. */
+	public final void playSadisticSound() { Erina.tryPlaySound(sadisticSound); }
 
 
 	/** Returns the identifier of this Competitor. */

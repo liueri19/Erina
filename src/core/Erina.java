@@ -1,5 +1,6 @@
 package core;
 
+import competitors.*;
 import greenfoot.Actor;
 import greenfoot.GreenfootSound;
 import greenfoot.World;
@@ -65,17 +66,39 @@ public final class Erina extends World {
 	private static final int WORLD_WIDTH = 1024;
 	private static final int WORLD_HEIGHT = 720;
 
-//	private static final String BGM_FILENAME = "sounds/17 Disc Wars 1.wav";
-//	private static final GreenfootSound BGM = new GreenfootSound(BGM_FILENAME);
+	private final String bgmFilename = "sounds/17 Disc Wars 1.wav";
+	private final GreenfootSound bgm = new GreenfootSound(bgmFilename);
 
 
-	private static final List<Competitor> COMPETITORS = new ArrayList<>();
+	private static final List<Entity<?, ?>> ENTITIES = new ArrayList<>();
 
 
 	public Erina() {
 		super(WORLD_WIDTH, WORLD_HEIGHT, 1);
 
 		System.out.println("Welcome to The Erina!");
+
+
+		// competitor examples
+		/*
+		Yes it is annoying to create Competitors like this.
+		The reason is that Entity constructors must not take Actors. If they do,
+		Competitors and subclasses must also take Actor to call super, which leaks
+		Actor references to Competitors.
+		 */
+
+		final List<Competitor> competitors = new ArrayList<>();
+
+		competitors.add(new TestCompetitor2(this, "TC_2"));
+		competitors.add(new TestCompetitor3(this, "TC_3"));
+		competitors.add(new TestCompetitor4(this, "TC_4"));
+		competitors.add(new TestCompetitor5(this, "TC_5"));
+		competitors.add(new TestCompetitor6(this, "TC_6"));
+		competitors.add(new TestCompetitor7(this, "TC_7"));
+
+		competitors.forEach(c -> c.init(new CompetitorActor(c)));
+
+		ENTITIES.addAll(competitors);
 	}
 
 
@@ -103,6 +126,20 @@ public final class Erina extends World {
 //		Integer i = super.<Integer>getObjects(null).get(0);
 //		System.out.println(i);
 		// getObjects probably using raw Lists internally?
+
+
+		tryPlaySound(bgm);
+	}
+
+
+	/**
+	 * Attempts to play the specified sound. Do not play if the sound is null
+	 * or is already playing.
+	 * @param sound	the sound to play
+	 */
+	public static void tryPlaySound(GreenfootSound sound) {
+		if (sound != null && !sound.isPlaying())
+			sound.play();
 	}
 
 
@@ -204,6 +241,19 @@ public final class Erina extends World {
 				c -> super.getObjectsAt(x, y, c),
 				cls
 		);
+	}
+
+
+	/**
+	 * Adds the specified Entity to this Erina, automatically adding the linked
+	 * Actor to this World as well.
+	 * @param entity	the Entity to add
+	 * @param x	the x position to add the specified Entity to
+	 * @param y	the y position to add the specified Entity to
+	 */
+	public void addEntity(Entity<?, ?> entity, int x, int y) {
+		ENTITIES.add(entity);
+		addObject(entity.getActor(), x, y);
 	}
 
 

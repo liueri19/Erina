@@ -25,6 +25,21 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 	 * Returns the amount of energy stored in this Sauce.
 	 */
 	public int getSauceValue() { return sauceValue; }
+
+	/**
+	 * Returns the number of iterations left until this Sauce expires.
+	 */
+	public int getIterationsLeft() { return iterationsLeft; }
+
+	/**
+	 * Updates this Sauce by decrement the amount of iterations left by 1.
+	 * @return	true if this Sauce has not expired, false otherwise
+	 */
+	boolean updateTimeout() {
+		if (iterationsLeft > 0)
+			iterationsLeft--;
+		return iterationsLeft > 0;
+	}
 }
 
 

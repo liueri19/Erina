@@ -37,8 +37,9 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 			hasInit = true;
 			this.actor = actor;
 		}
-
-		throw new IllegalStateException("Cannot re-initialize Entity");
+		else {
+			throw new IllegalStateException("Cannot re-initialize Entity");
+		}
 	}
 
 	/** Gets the Actor bound to this Entity. */

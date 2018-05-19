@@ -4,10 +4,9 @@ import competitors.*;
 import greenfoot.Actor;
 import greenfoot.GreenfootSound;
 import greenfoot.World;
+import greenfoot.sound.Sound;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,11 +62,22 @@ public final class Erina extends World {
 	 * the Erina during execution.
 	 */
 
-	private static final int WORLD_WIDTH = 1024;
-	private static final int WORLD_HEIGHT = 720;
+	/** Width of the Erina. */
+	public static final int WORLD_WIDTH = 1024;
+	/** Height of the Erina. */
+	public static final int WORLD_HEIGHT = 720;
 
+	// the BGM played through out the game
 	private final String bgmFilename = "sounds/17 Disc Wars 1.wav";
 	private final GreenfootSound bgm = new GreenfootSound(bgmFilename);
+
+	// the sounds made only once at the start
+	private final List<GreenfootSound> startSounds = initSounds(
+			"sounds/WHOOSH_Camera_Flash.wav",
+			"sounds/It's time to Duel [HQ] - YouTube.mp3"
+	);
+
+	private boolean isFirstAct = true;
 
 
 	private static final List<Entity<?, ?>> ENTITIES = new ArrayList<>();
@@ -97,8 +107,6 @@ public final class Erina extends World {
 		competitors.add(new TestCompetitor7(this, "TC_7"));
 
 		competitors.forEach(c -> c.init(new CompetitorActor(c)));
-
-		ENTITIES.addAll(competitors);
 	}
 
 
@@ -128,7 +136,14 @@ public final class Erina extends World {
 		// getObjects probably using raw Lists internally?
 
 
+		if (isFirstAct) {
+			isFirstAct = false;
+			tryPlaySounds(startSounds);
+		}
+
 		tryPlaySound(bgm);
+
+
 	}
 
 
@@ -140,6 +155,91 @@ public final class Erina extends World {
 	public static void tryPlaySound(GreenfootSound sound) {
 		if (sound != null && !sound.isPlaying())
 			sound.play();
+	}
+
+	/**
+	 * Attempts to play the specified sounds in the iteration order of the Collection. Any
+	 * sound that is null or is already playing is skipped.
+	 * @param sounds	the sounds to play
+	 */
+	public static void tryPlaySounds(Collection<? extends GreenfootSound> sounds) {
+		sounds.forEach(Erina::tryPlaySound);
+	}
+
+	/**
+	 * Creates GreenfootSound objects for each of the sound files.
+	 * @param soundFiles	filenames of the sound files
+	 * @return	a List containing the created GreenfootSounds
+	 */
+	public static List<GreenfootSound> initSounds(String... soundFiles) {
+		final List<GreenfootSound> sounds = new ArrayList<>();
+
+		for (String file : soundFiles)
+			sounds.add(new GreenfootSound(file));
+
+		return sounds;
+	}
+
+
+
+	/** Simple data class representing a Coordinate. */
+	private static class Coordinate {
+		private final int x, y;
+		private Coordinate(int x, int y) { this.x = x; this.y = y; }
+	}
+
+	/**
+	 * Generates the Coordinates for the specified number of competitors in a world of
+	 * specified width and height.
+	 * The generated Coordinates are on a symmetrical shape centered at the center of the
+	 * world. Each Coordinate is defined such that the distance from the Coordinate to the
+	 * origin is 90% of the length of the line segment from the origin to the point of
+	 * intersection formed by the bounds of the world and the line passing through the
+	 * origin and the Coordinate.
+	 */
+	private static List<Coordinate> getCoordinatesFor(
+			int numEntities,
+			double width,
+			double height) {
+		// all angles in radians, 0 facing right, positive in counterclockwise direction
+		final double anglePerEntity = 2 * Math.PI / numEntities;
+
+		// angles from center to each corner for each quadrant
+		final double quadrant1 = Math.atan(height / width);
+		final double quadrant2 = Math.PI - quadrant1;
+		final double quadrant3 = Math.PI + quadrant1;
+		final double quadrant4 = 2 * Math.PI - quadrant1;
+
+		final List<Coordinate> coordinates = new ArrayList<>();
+
+		// for each entity's angle
+		for (double angle = 0; angle < Math.PI * 2; angle += anglePerEntity) {
+			double opposite, adjacent, hypotenuse;
+
+			if (angle < quadrant1 || angle > quadrant4) {	// on right side
+				adjacent = width / 2;
+				hypotenuse = 1 / Math.cos(angle) * adjacent;
+			}
+			else if (angle > quadrant1 && angle < quadrant2) {	// on top
+				opposite = height / 2;
+				hypotenuse = 1 / Math.sin(angle) * opposite;
+			}
+			else if (angle > quadrant2 && angle > quadrant3) {	// on left side
+				adjacent = - width / 2;
+				hypotenuse = 1 / Math.cos(angle) * adjacent;
+			}
+			else {	// on bottom
+				opposite = - height / 2;
+				hypotenuse = 1 / Math.sin(angle) * opposite;
+			}
+
+			coordinates.add(new Coordinate(
+					(int) (0.9 * hypotenuse * Math.cos(angle)),
+					(int) (0.9 * hypotenuse * Math.sin(angle))
+			));
+		}
+
+		return coordinates;
 	}
 
 
@@ -185,20 +285,20 @@ public final class Erina extends World {
 
 
 	/**
-	 * Returns all objects in this World, or all objects of the specified type if
-	 * {@code cls} is not null.
+	 * Returns all objects of the specified type.
 	 *
 	 * <p>In order to prevent returning references to Actor objects, this method modifies
 	 * the behaviour of {@link World#getObjects(Class)} in two important ways. If an instance
 	 * of {@code Class<Actor>} (e.g. {@code Actor.class}) was passed in, this method fails
-	 * with IllegalArgumentException. If null was passed in, a List containing all objects
-	 * in this World except Actors will be returned.
+	 * with IllegalArgumentException. If null was passed in, this method fails with
+	 * NullPointerException.
 	 *
 	 * @param cls	the Class representing the type of objects to get
 	 * @param <T>	the type of objects to get
 	 * @return	a List of matching objects except Actors
 	 * @throws IllegalArgumentException	if an instance of {@code Class<Actor>}
 	 * (e.g. {@code Actor.class}) was passed in
+	 * @throws NullPointerException	if null was passed in
 	 */
 	@Override
 	public <T> List<T> getObjects(Class<T> cls) {
@@ -212,14 +312,13 @@ public final class Erina extends World {
 
 
 	/**
-	 * Returns all objects at the given location, or all objects at the given location of
-	 * the specified type if {@code cls} is not null.
+	 * Returns all objects at the given location of the specified type.
 	 *
 	 * <p>In order to prevent returning references to Actor objects, this method modifies
-	 * the behaviour of {@link World#getObjectsAt(int, int, Class)} in 3 important ways.
+	 * the behaviour of {@link World#getObjectsAt(int, int, Class)} in two important ways.
 	 * If an instance of {@code Class<Actor>} (e.g. {@code Actor.class}) was passed in,
-	 * this method fails with IllegalArgumentException. If null was passed in, a List
-	 * containing all objects at the given location except Actors will be returned.
+	 * this method fails with IllegalArgumentException. If null was passed in, this method
+	 * fails with NullPointerException.
 	 *
 	 * @param x		the x coordinate of the location to find objects at
 	 * @param y		the y coordinate of the location to find objects at
@@ -228,6 +327,7 @@ public final class Erina extends World {
 	 * @return	a List of matching objects except Actors
 	 * @throws IllegalArgumentException	if an instance of {@code Class<Actor>}
 	 * (e.g. {@code Actor.class}) was passed in
+	 * @throws NullPointerException	if null was passed in
 	 */
 	@Override
 	public <T> List<T> getObjectsAt(int x, int y, Class<T> cls)

@@ -4,7 +4,6 @@ import competitors.*;
 import greenfoot.Actor;
 import greenfoot.GreenfootSound;
 import greenfoot.World;
-import greenfoot.sound.Sound;
 
 import java.util.*;
 import java.util.function.Function;
@@ -79,6 +78,7 @@ public final class Erina extends World {
 
 	private boolean isFirstAct = true;
 
+	private static final ManeuverFetcher FETCHER = new ManeuverFetcher();
 
 	private static final List<Entity<?, ?>> ENTITIES = new ArrayList<>();
 
@@ -106,7 +106,13 @@ public final class Erina extends World {
 		competitors.add(new TestCompetitor6(this, "TC_6"));
 		competitors.add(new TestCompetitor7(this, "TC_7"));
 
-		competitors.forEach(c -> c.init(new CompetitorActor(c)));
+		// finish init and submit for updating
+		competitors.forEach(c -> {
+			c.init(new CompetitorActor(c));
+			FETCHER.submit(c);
+		});
+
+		FETCHER.start();
 	}
 
 
@@ -212,8 +218,9 @@ public final class Erina extends World {
 
 		final List<Coordinate> coordinates = new ArrayList<>();
 
-		// for each entity's angle
-		for (double angle = 0; angle < Math.PI * 2; angle += anglePerEntity) {
+//		// for each entity
+		for (int i = 0; i < numEntities; i++) {
+			final double angle = anglePerEntity * i;
 			double opposite, adjacent, hypotenuse;
 
 			if (angle < quadrant1 || angle > quadrant4) {	// on right side

@@ -1,6 +1,7 @@
 package core;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
@@ -14,12 +15,13 @@ final class ManeuverFetcher {
 
 	private volatile boolean running = false;
 
-	// one extra thread for calling fetchers
+	// one extra thread for dispatching fetchers
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final ExecutorService fetchers = Executors.newCachedThreadPool();
 
 	// Maneuverables and their next Maneuvers
-	private final Map<Maneuverable, Maneuver> maneuverableToManeuver =
+	// Optional is used because ConcurrentHashMap does not allow null
+	private final Map<Maneuverable, Optional<Maneuver>> maneuverableToManeuver =
 			new ConcurrentHashMap<>();
 
 	/*
@@ -43,10 +45,10 @@ final class ManeuverFetcher {
 				while (running) {
 
 					// for each entry
-					maneuverableToManeuver.forEach((maneuverable, maneuver) -> {
+					maneuverableToManeuver.forEach((maneuverable, optional) -> {
 						// if the maneuverable has not provided its next maneuver
 						// and we have not asked it for its next maneuver
-						if (maneuver == null &&
+						if (!optional.isPresent() &&
 								maneuverableToFuture.get(maneuverable) == null) {
 							// store the future so we know next time not to ask again
 							maneuverableToFuture.put(
@@ -55,7 +57,10 @@ final class ManeuverFetcher {
 										// ask for the maneuver
 										final Maneuver nextManeuver = maneuverable.doManeuver();
 										// then put its next maneuver in the map
-										maneuverableToManeuver.put(maneuverable, nextManeuver);
+										maneuverableToManeuver.put(
+												maneuverable,
+												Optional.of(nextManeuver)
+										);
 									})
 							);
 
@@ -84,7 +89,7 @@ final class ManeuverFetcher {
 	 * @param maneuverable	the Maneuverable to be fetched
 	 */
 	void submit(Maneuverable maneuverable) {
-		maneuverableToManeuver.put(maneuverable, null);
+		maneuverableToManeuver.put(maneuverable, Optional.empty());
 	}
 
 	/**
@@ -107,6 +112,10 @@ final class ManeuverFetcher {
 	 */
 	Maneuver fetch(Maneuverable maneuverable) {
 		maneuverableToFuture.remove(maneuverable);
-		return maneuverableToManeuver.put(maneuverable, null);
+		Optional<Maneuver> optional =
+				maneuverableToManeuver.put(maneuverable, Optional.empty());
+		if (optional != null)
+			return optional.orElse(null);
+		return null;
 	}
 }

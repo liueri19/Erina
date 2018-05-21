@@ -28,6 +28,25 @@ public abstract class Competitor
 	/** Amount of energy this competitor has. */
 	private int energyLevel = INITIAL_ENERGY_LEVEL;
 
+	private CompetitorStats stats;
+
+
+	/**
+	 * Gets a CompetitorStats object holding the statistics about this Competitor.
+	 * @see	CompetitorStats
+	 */
+	public final CompetitorStats getStats() {
+		return stats;
+	}
+
+	/**
+	 * Updates the statistics of this Competitor to the specified values.
+	 * @see	CompetitorStats
+	 */
+	final void updateStats(CompetitorStats stats) {
+		this.stats = stats;
+	}
+
 
 	/**
 	 * Constructs a new Competitor with the specified name.
@@ -37,6 +56,7 @@ public abstract class Competitor
 	public Competitor(Erina world, String name) {
 		super(world);
 		this.name = name;
+		stats = new CompetitorStats();
 	}
 
 

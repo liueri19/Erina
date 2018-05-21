@@ -106,11 +106,23 @@ public final class Erina extends World {
 		competitors.add(new TestCompetitor6(this, "TC_6"));
 		competitors.add(new TestCompetitor7(this, "TC_7"));
 
-		// finish init and submit for updating
-		competitors.forEach(c -> {
-			c.init(new CompetitorActor(c));
-			FETCHER.submit(c);
-		});
+		final List<Coordinate> coordinates =
+				getCoordinatesFor(competitors.size(), WORLD_WIDTH, WORLD_HEIGHT);
+		// calculated coordinates are centered at the center of the world, need to convert
+		coordinates.replaceAll(c -> new Coordinate(
+				WORLD_WIDTH / 2 + c.x,
+				WORLD_HEIGHT / 2 - c.y
+		));
+
+		// finish init, add to world, submit for updating
+		for (int i = 0; i < competitors.size(); i++) {
+			final Competitor competitor = competitors.get(i);
+			final Coordinate coordinate = coordinates.get(i);
+
+			competitor.init(new CompetitorActor(competitor));
+			addEntity(competitor, coordinate.x, coordinate.y);
+			FETCHER.submit(competitor);
+		}
 
 		FETCHER.start();
 	}
@@ -231,7 +243,7 @@ public final class Erina extends World {
 				opposite = height / 2;
 				hypotenuse = 1 / Math.sin(angle) * opposite;
 			}
-			else if (angle > quadrant2 && angle > quadrant3) {	// on left side
+			else if (angle > quadrant2 && angle < quadrant3) {	// on left side
 				adjacent = - width / 2;
 				hypotenuse = 1 / Math.cos(angle) * adjacent;
 			}

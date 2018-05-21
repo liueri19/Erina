@@ -2,6 +2,7 @@ package core;
 
 import competitors.*;
 import greenfoot.Actor;
+import greenfoot.Greenfoot;
 import greenfoot.GreenfootSound;
 import greenfoot.World;
 
@@ -157,11 +158,20 @@ public final class Erina extends World {
 		if (isFirstAct) {
 			isFirstAct = false;
 			tryPlaySounds(startSounds);
+
+			while (startSounds.get(startSounds.size()-1).isPlaying())
+				Greenfoot.delay(30);
 		}
 
 		tryPlaySound(bgm);
 
 
+		// TODO add random nugget
+
+		// TODO add random sauce
+
+
+		// TODO handle maneuvers
 	}
 
 

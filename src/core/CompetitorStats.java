@@ -3,6 +3,9 @@ package core;
 /**
  * A class that holds some statistics about a Competitor.
  * This class is immutable.
+ *
+ * @version alpha
+ * @author Eric
  */
 public final class CompetitorStats {
 

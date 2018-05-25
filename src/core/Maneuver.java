@@ -74,7 +74,7 @@ public class Maneuver {
 	 * @return	this instance
 	 */
 	public Maneuver move(int distance) {
-		actions.offer(new Advance(distance));
+		actions.add(new Advance(distance));
 
 		// negative direction because we are counting clockwise as positive
 		final double rads = Math.toRadians(-direction);
@@ -92,7 +92,7 @@ public class Maneuver {
 	 * @return	this instance
 	 */
 	public Maneuver turn(int degrees) {
-		actions.offer(new Turn(degrees));
+		actions.add(new Turn(degrees));
 
 		setDirection(getDirection() + degrees);
 

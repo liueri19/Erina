@@ -171,7 +171,24 @@ public final class Erina extends World {
 		// TODO add random sauce
 
 
-		// TODO handle maneuvers
+		// handle maneuvers
+
+		final Map<Competitor, Maneuver> maneuvers = new HashMap<>();
+
+		for (Entity<?, ?> entity : ENTITIES) {
+			final Competitor competitor;
+
+			if (entity instanceof Competitor)
+				competitor = (Competitor) entity;
+			else continue;
+
+			final Maneuver maneuver = FETCHER.fetch(competitor);
+
+			if (maneuver != null)
+				maneuvers.put(competitor, maneuver);
+		}
+
+		ManeuverHandler.handle(maneuvers);
 	}
 
 

@@ -132,8 +132,8 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		return objects.isEmpty() ? null : objects.get(0);
 	}
 
-	/** @see	Actor#getRotation()  */
-	public final int getRotation() { validate(); return getActor().getRotation(); }
+	/** @see	Actor#getRotation() */
+	public final int getDirection() { validate(); return getActor().getRotation(); }
 
 	/** @see	Actor#getWorld()  */
 	public final Erina getWorld() { validate(); return world; }
@@ -143,6 +143,9 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 
 	/** @see	Actor#getY() */
 	public final int getY() { validate(); return getActor().getY(); }
+
+	/** @see	Actor#setLocation(int, int) */
+	final void setLocation(int x, int y) { validate(); getActor().setLocation(x, y); }
 
 	/**
 	 * Checks whether this Competitor intersects with the specified Entity.
@@ -174,6 +177,9 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		validate(); getActor().setImage(image);
 	}
 
-	/** @see	Actor#getRotation() */
-	public final int getDirection() { validate(); return getActor().getRotation(); }
+	/** @see	Actor#turn(int)  */
+	final void turn(int degrees) { validate(); getActor().turn(degrees); }
+
+	/** @see    Actor#turnTowards(int, int)  */
+	final void turnTo(int x, int y) { validate(); getActor().turnTowards(x, y); }
 }

@@ -4,7 +4,6 @@ import core.Competitor;
 import core.Erina;
 import core.Maneuver;
 import greenfoot.Greenfoot;
-import greenfoot.GreenfootSound;
 
 import java.util.List;
 

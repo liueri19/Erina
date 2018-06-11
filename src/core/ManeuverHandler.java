@@ -12,9 +12,16 @@ final class ManeuverHandler {
 	private ManeuverHandler() {}
 
 	/**
-	 * Handles the specified Maneuvers and apply it on the specified Competitors.
+	 * Handles the specified Maneuvers and apply it on the specified Entities.
 	 */
-	static void handle(Map<? extends Competitor, ? extends Maneuver> maneuers) {
-		// TODO implement this
+	static void handle(Map<? extends Entity<?, ?>, ? extends Maneuver> maneuvers) {
+		// temporary handling, no validation checking
+		// TODO replace with better algorithm
+		maneuvers.forEach(
+						(entity, maneuver) -> {
+							maneuver.getActions()
+									.forEach(action -> action.applyTo(entity));
+						}
+		);
 	}
 }

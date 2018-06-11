@@ -5,7 +5,6 @@ import core.Erina;
 import core.Maneuver;
 import core.Nugget;
 import greenfoot.Greenfoot;
-import greenfoot.GreenfootSound;
 
 import java.util.List;
 

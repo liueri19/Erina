@@ -79,7 +79,8 @@ public final class Erina extends World {
 
 	private boolean isFirstAct = true;
 
-	private static final ManeuverFetcher FETCHER = new ManeuverFetcher();
+	// each reset in greenfoot constructs a new Erina
+	private final ManeuverFetcher FETCHER = new ManeuverFetcher();
 
 	private static final List<Entity<?, ?>> ENTITIES = new ArrayList<>();
 

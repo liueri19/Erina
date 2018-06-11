@@ -1,41 +1,28 @@
 package core;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * This class represents an action. A Maneuver describes a set of turnings and movements.
+ * A Maneuver describes a set of turnings and movements.
  *
  * @version alpha
  * @author Eric
  */
 public class Maneuver {
 
-	static abstract class Action {}
+	/*
+	Note:
+	Competitors produce Maneuvers, Erina (specifically ManeuverHandler consumes Maneuvers.
+	The former and the latter run on separate threads. Operations on Maneuver objects
+	should be synchronized.
+	 */
 
-	/** Represents an advancement of a certain distance. */
-	private static final class Advance extends Action {
-		private final int distance;
-		private Advance(int distance) { this.distance = distance; }
-		@Override
-		public String toString() { return "advance " + distance + " units"; }
-	}
-
-	/** Represents a clockwise turn of certain degrees. */
-	private static final class Turn extends Action {
-		private final int degrees;
-		private Turn(int degrees) { this.degrees = degrees; }
-		@Override
-		public String toString() { return "turn clockwise " + degrees + " degrees"; }
-	}
-
-
-
-	private final Queue<Action> actions = new LinkedList<>();
+	private final Queue<Action> actions = new ConcurrentLinkedQueue<>();
 
 	private final int initialX, initialY;
-	private int x, y, direction;
+	private volatile int x, y, direction;
 
 	/**
 	 * Creates a new Maneuver that starts at the specified location direction the specified
@@ -55,15 +42,15 @@ public class Maneuver {
 	}
 
 	/**
-	 * Creates a new Maneuver that starts at the location of the specified Competitor and
-	 * faces in the same direction as the Competitor.
-	 * @param competitor	the Competitor to acquire location and direction from
+	 * Creates a new Maneuver that starts at the location of the specified Entity and
+	 * faces in the same direction as the Entity.
+	 * @param entity	the Entity to acquire location and direction from
 	 */
-	public Maneuver(Competitor competitor) {
+	public Maneuver(Entity<?, ?> entity) {
 		this(
-				competitor.getX(),
-				competitor.getY(),
-				competitor.getDirection()
+				entity.getX(),
+				entity.getY(),
+				entity.getDirection()
 		);
 	}
 
@@ -73,7 +60,7 @@ public class Maneuver {
 	 * @param distance	the amount to move
 	 * @return	this instance
 	 */
-	public Maneuver move(int distance) {
+	public synchronized Maneuver move(int distance) {
 		actions.add(new Advance(distance));
 
 		// negative direction because we are counting clockwise as positive
@@ -91,7 +78,7 @@ public class Maneuver {
 	 * @param degrees	the amount to turn in degrees
 	 * @return	this instance
 	 */
-	public Maneuver turn(int degrees) {
+	public synchronized Maneuver turn(int degrees) {
 		actions.add(new Turn(degrees));
 
 		setDirection(getDirection() + degrees);
@@ -105,7 +92,7 @@ public class Maneuver {
 	 * @param y	the y coordinate of the cell to turn to
 	 * @return	this instance
 	 */
-	public Maneuver turnTo(int x, int y) {
+	public synchronized Maneuver turnTo(int x, int y) {
 		final double rads =
 				Math.atan(
 						(double) (y - getY()) / (x - getX())
@@ -147,6 +134,9 @@ public class Maneuver {
 	public int getDirection() { return direction; }
 
 
+	Queue<Action> getActions() { return actions; }
+
+
 	private void setX(int x) { this.x = x; }
 	private void setY(int y) { this.y = y; }
 	private void setDirection(int direction) { this.direction = direction; }
@@ -154,7 +144,6 @@ public class Maneuver {
 
 	/**
 	 * Returns a string representation of this Maneuver.
-	 * This method is mainly designed to print information for debugging purposes.
 	 * @return	the string representation
 	 */
 	@Override
@@ -179,7 +168,6 @@ public class Maneuver {
 
 	/**
 	 * Returns a shorter string representation of this Maneuver.
-	 * This method is mainly designed to print information for debugging purposes.
 	 * @return	the string representation
 	 */
 	public String toShortString() {

@@ -1,6 +1,6 @@
 package core;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class handles Maneuvers supplied by Competitors.
@@ -17,11 +17,33 @@ final class ManeuverHandler {
 	static void handle(Map<? extends Entity<?, ?>, ? extends Maneuver> maneuvers) {
 		// temporary handling, no validation checking
 		// TODO replace with better algorithm
+
+		// acquire Iterators from Maneuvers
+		final Map<Entity<?, ?>, Iterator<Action>> iterators = new HashMap<>();
+
 		maneuvers.forEach(
-						(entity, maneuver) -> {
-							maneuver.getActions()
-									.forEach(action -> action.applyTo(entity));
-						}
+				(entity, maneuver) ->
+						iterators.put(entity, maneuver.getActions().iterator())
 		);
+
+		boolean hasMoreActions = true;
+
+		while (hasMoreActions) {	// until all iterators are depleted
+			hasMoreActions = false;
+
+			// iterate over iterators, process one action from each iterator
+			for (Map.Entry<Entity<?, ?>, Iterator<Action>> entry : iterators.entrySet()) {
+				final Entity<?, ?> entity = entry.getKey();
+				final Iterator<Action> iterator = entry.getValue();
+
+				if (iterator.hasNext()) {
+					hasMoreActions = true;
+					iterator.next().applyTo(entity);
+				}
+			}
+		}
+
+
+		// TODO handle collisions
 	}
 }

@@ -1,6 +1,5 @@
-package core;
+package erina;
 
-import competitors.*;
 import greenfoot.Actor;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootSound;
@@ -141,12 +140,18 @@ public final class Erina extends World {
 			final List<Competitor> competitors = new ArrayList<>();
 
 			// competitors added here, follow this pattern to add/remove competitors
-			competitors.add(new TestCompetitor2(this, "TC_2"));
-			competitors.add(new TestCompetitor3(this, "TC_3"));
-			competitors.add(new TestCompetitor4(this, "TC_4"));
-			competitors.add(new TestCompetitor5(this, "TC_5"));
-			competitors.add(new TestCompetitor6(this, "TC_6"));
-			competitors.add(new TestCompetitor7(this, "TC_7"));
+//			competitors.add(new TestCompetitor2(this, "TC_2"));
+//			competitors.add(new TestCompetitor3(this, "TC_3"));
+//			competitors.add(new TestCompetitor4(this, "TC_4"));
+//			competitors.add(new TestCompetitor5(this, "TC_5"));
+//			competitors.add(new TestCompetitor6(this, "TC_6"));
+//			competitors.add(new TestCompetitor7(this, "TC_7"));
+			competitors.add(new Competitor(this, "DebugComp") {
+				@Override
+				public Maneuver doManeuver() {
+					return new Maneuver(this).turn(-3).move(5);
+				}
+			});
 
 			final List<Coordinate> coordinates =
 					getCoordinatesFor(competitors.size(), WORLD_WIDTH, WORLD_HEIGHT);
@@ -204,7 +209,7 @@ public final class Erina extends World {
 			 */
 
 			final double PROBABILITY =
-					(MAX_NUGGETS - getObjects(Nugget.class).size()) * 0.01 / MAX_NUGGETS;
+					(MAX_NUGGETS - getObjects(Nugget.class).size()) * 0.9 / MAX_NUGGETS;
 
 			if (Math.random() < PROBABILITY) {	// if add nugget
 				addEntity(
@@ -241,7 +246,7 @@ public final class Erina extends World {
 			}
 
 			// move, handle nuggets, handle sauces
-			ManeuverHandler.handle(maneuvers);
+			ManeuverHandler.handle(this, maneuvers);
 		}
 	}
 
@@ -450,19 +455,22 @@ public final class Erina extends World {
 	 * @param entity	the Entity to add
 	 * @param x	the x position to add the specified Entity to
 	 * @param y	the y position to add the specified Entity to
+	 * @see World#addObject(Actor, int, int)
 	 */
-	public void addEntity(Entity<?, ?> entity, int x, int y) {
+	void addEntity(Entity<?, ?> entity, int x, int y) {
 		ENTITIES.add(entity);
-		super.addObject(entity.getActor(), x, y);
+		addObject(entity.getActor(), x, y);
 	}
 
 
 	/**
-	 * Consider using {@link Erina#addEntity(Entity, int, int)} instead.
+	 * Removes the specified Entity from the world.
+	 * @param entity	the Entity to remove
+	 * @see World#removeObject(Actor)
 	 */
-	@Override @Deprecated
-	public void addObject(Actor object, int x, int y) {
-		super.addObject(object, x, y);
+	void removeEntity(Entity<?, ?> entity) {
+		ENTITIES.remove(entity);
+		removeObject(entity.getActor());
 	}
 
 

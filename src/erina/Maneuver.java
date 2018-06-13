@@ -1,4 +1,4 @@
-package core;
+package erina;
 
 import java.util.Iterator;
 import java.util.Queue;
@@ -14,7 +14,7 @@ public class Maneuver {
 
 	/*
 	Note:
-	Competitors produce Maneuvers, Erina (specifically ManeuverHandler consumes Maneuvers.
+	Competitors produce Maneuvers, Erina (specifically ManeuverHandler) consumes Maneuvers.
 	The former and the latter run on separate threads. Operations on Maneuver objects
 	should be synchronized.
 	 */

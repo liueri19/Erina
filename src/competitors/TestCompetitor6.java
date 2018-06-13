@@ -1,9 +1,9 @@
 package competitors;
 
-import core.Competitor;
-import core.Erina;
-import core.Maneuver;
-import core.Nugget;
+import erina.Competitor;
+import erina.Erina;
+import erina.Maneuver;
+import erina.Nugget;
 import greenfoot.Greenfoot;
 
 import java.util.List;

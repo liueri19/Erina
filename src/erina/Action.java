@@ -1,4 +1,4 @@
-package core;
+package erina;
 
 /**
  * An Action is a single step in a Maneuver. An Action can be applied to an Entity.
@@ -7,19 +7,28 @@ package core;
  * @author Eric
  */
 abstract class Action {
-	abstract void applyTo(Entity<?, ?> entity);
+	abstract void applyTo(Competitor competitor);
 }
 
 
 /** Represents an advancement of a certain distance. */
 final class Advance extends Action {
-	private final int distance;
+	private final int distance, cost;
 
-	Advance(int distance) { this.distance = distance; }
+	Advance(int distance) {
+		// if malicious attempt to cause overflow
+		if (distance == Integer.MIN_VALUE)
+			distance = distance+1;
+
+		this.distance = distance;
+
+		cost = Math.abs(distance);
+	}
 
 	@Override
-	void applyTo(Entity<?, ?> entity) {
-		entity.getActor().move(distance);
+	void applyTo(Competitor competitor) {
+		competitor.changeEnergy(-cost);
+		competitor.getActor().move(distance);
 	}
 
 	@Override
@@ -34,8 +43,8 @@ final class Turn extends Action {
 	Turn(int degrees) { this.degrees = degrees; }
 
 	@Override
-	void applyTo(Entity<?, ?> entity) {
-		entity.getActor().turn(degrees);
+	void applyTo(Competitor competitor) {
+		competitor.getActor().turn(degrees);
 	}
 
 	@Override

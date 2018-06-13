@@ -1,4 +1,4 @@
-package core;
+package erina;
 
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
@@ -118,6 +118,7 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 	 * @see	Actor#getOneIntersectingObject(Class)
 	 */
 	protected final <T> T getOneIntersectingObject(Class<T> cls) {
+		validate();
 		final List<T> objects = getIntersectingObjects(cls);
 		return objects.isEmpty() ? null : objects.get(0);
 	}
@@ -128,6 +129,7 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 	 * @see	Actor#getOneObjectAtOffset(int, int, Class)
 	 */
 	protected final <T> T getOneObjectAtOffset(int dx, int dy, Class<T> cls) {
+		validate();
 		final List<T> objects = getObjectsAtOffset(dx, dy, cls);
 		return objects.isEmpty() ? null : objects.get(0);
 	}
@@ -164,7 +166,7 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 	/** @see	Actor#isTouching(Class)  */
 	protected final boolean isTouching(Class<?> cls) {
 		validate();
-		return getActor().isTouchingSuper(cls);
+		return getOneIntersectingObject(cls) != null;
 	}
 
 	/** @see	Actor#setImage(String)  */
@@ -176,10 +178,4 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 	public final void setImage(GreenfootImage image) {
 		validate(); getActor().setImage(image);
 	}
-
-	/** @see	Actor#turn(int)  */
-	final void turn(int degrees) { validate(); getActor().turn(degrees); }
-
-	/** @see    Actor#turnTowards(int, int)  */
-	final void turnTo(int x, int y) { validate(); getActor().turnTowards(x, y); }
 }

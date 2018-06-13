@@ -1,4 +1,4 @@
-package core;
+package erina;
 
 import greenfoot.Actor;
 import greenfoot.World;
@@ -23,9 +23,16 @@ abstract class EntityActor<E extends Entity<E, A>, A extends EntityActor<E, A>>
 	E getEntity() { return entity; }
 
 
-	// The following methods allow classes in core to access protected methods in Actor
+	// The following methods allow classes in erina to access protected methods in Actor
 
-	void addedToWorldSuper(World world) { getEntity().addedToWorld(world); }
+
+	/**
+	 * Calls {@link Entity#addedToWorld(World)}. Override that method to implement custom
+	 * behaviour.
+	 */
+	@Override
+	protected final void addedToWorld(World world) { getEntity().addedToWorld(world); }
+
 	<T> List<T> getIntersectingObjectsSuper(Class<T> cls) { return super.getIntersectingObjects(cls); }
 	<T> List<T> getNeighboursSuper(int distance, boolean diagonal, Class<T> cls) {
 		return super.getNeighbours(distance, diagonal, cls);

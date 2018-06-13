@@ -1,4 +1,4 @@
-package core;
+package erina;
 
 @FunctionalInterface
 public interface Maneuverable {

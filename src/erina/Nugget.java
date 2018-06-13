@@ -1,4 +1,4 @@
-package core;
+package erina;
 
 /**
  * A Nugget is an Entity with some energy. Competitors may acquire the energy
@@ -19,6 +19,11 @@ public final class Nugget extends Entity<Nugget, NuggetActor> {
 	 * Returns the amount of energy stored in this nugget.
 	 */
 	public int getNuggetValue() { return nuggetValue; }
+
+	@Override
+	public String toString() {
+		return "Nugget_" + nuggetValue;
+	}
 }
 
 final class NuggetActor extends EntityActor<Nugget, NuggetActor> {

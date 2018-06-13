@@ -1,4 +1,4 @@
-package core;
+package erina;
 
 import greenfoot.GreenfootSound;
 
@@ -130,6 +130,39 @@ public abstract class Competitor
 	public final String getName() { return name; }
 
 
+	/**
+	 * Consumes the nugget. Remove the nugget from the Erina, update the energy level of
+	 * this Competitor, and update the stats.
+	 */
+	final void consume(Nugget nugget) {
+		getWorld().removeEntity(nugget);
+		changeEnergy(nugget.getNuggetValue());
+		getStats().incrementNuggets(nugget);
+	}
+
+	final void consume(Sauce sauce) {
+		// TODO consume sauce
+	}
+
+
 	@Override
 	public String toString() { return name; }
+}
+
+
+
+/**
+ * A concrete implementation of Actor used in Competitors.
+ *
+ * <p>Since Competitors are not Actors, they are not updated by the Greenfoot framework.
+ * This class allows Competitors to be represented in the Erina as Actors.
+ *
+ * @version alpha
+ * @author Eric
+ */
+class CompetitorActor extends EntityActor<Competitor, CompetitorActor> {
+
+	CompetitorActor(Competitor entity) {
+		super(entity);
+	}
 }

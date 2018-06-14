@@ -61,9 +61,5 @@ final class ManeuverHandler {
 				}
 			}
 		}
-
-
-		// TODO update competitor stats
-
 	}
 }

@@ -8,6 +8,9 @@ package erina;
  * multiplied by the number of Competitors touching the Sauce at the time
  * of expiry. The goal of this behaviour is to encourage cooperation
  * among Competitors.
+ *
+ * @version alpha
+ * @author Eric
  */
 public final class Sauce extends Entity<Sauce, SauceActor> {
 

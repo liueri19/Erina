@@ -71,6 +71,8 @@ public final class Erina extends World {
 
 	// list of nuggets, instances in this list are reused
 	private final List<Nugget> NUGGETS;
+	// same for sauces
+	private final List<Sauce> SAUCES;
 
 	// the BGM played through out the game
 	private final String bgmFilename = "sounds/17 Disc Wars 1.wav";
@@ -83,6 +85,8 @@ public final class Erina extends World {
 	);
 
 	private boolean isFirstAct = true;
+
+	private long currentCycle = 0;
 
 	// not static because each reset in greenfoot constructs a new Erina
 	private final ManeuverFetcher FETCHER = new ManeuverFetcher();
@@ -100,10 +104,12 @@ public final class Erina extends World {
 			// init nuggets, 10% are 1500, 30% are 1000, 60% are 500
 			final List<Nugget> nuggets = new ArrayList<>();
 
-			for (int i = 0; i < MAX_NUGGETS; i++) {
-				if (i < 0.1 * MAX_NUGGETS)	// 10%
+			// doesn't really matter, 10 is a nice number
+			final int someNum = 10;
+			for (int i = 0; i < someNum; i++) {
+				if (i < 0.1 * someNum)	// 10%
 					nuggets.add(new Nugget(this, 1500));
-				else if (i < 0.3 * MAX_NUGGETS)	// 30%
+				else if (i < 0.3 * someNum)	// 30%
 					nuggets.add(new Nugget(this, 1000));
 				else	// the rest
 					nuggets.add(new Nugget(this, 500));
@@ -125,6 +131,40 @@ public final class Erina extends World {
 			}
 
 			NUGGETS = Collections.unmodifiableList(nuggets);
+		}
+
+
+		{
+			// init sauces, very similar to nuggets
+			final List<Sauce> sauces = new ArrayList<>();
+
+			final int someNum = 10;
+			for (int i = 0; i < someNum; i++) {
+				if (i < 0.1 * someNum)
+					sauces.add(new Sauce(this, 1500));
+				else if (i < 0.3 * someNum)
+					sauces.add(new Sauce(this, 1000));
+				else
+					sauces.add(new Sauce(this, 500));
+			}
+
+			// init actors
+			sauces.forEach(sauce -> sauce.init(new SauceActor(sauce)));
+
+			// set images
+			for (Sauce sauce : sauces) {
+				final int sauceValue = sauce.getSauceValue();
+
+				// just in case you find different images for sauces and want to change
+				if (sauceValue == 500)
+					sauce.setImage("images/LaoGanMa2.png");
+				else if (sauceValue == 1000)
+					sauce.setImage("images/LaoGanMa2.png");
+				else
+					sauce.setImage("images/LaoGanMa2.png");
+			}
+
+			SAUCES = Collections.unmodifiableList(sauces);
 		}
 
 
@@ -189,6 +229,7 @@ public final class Erina extends World {
 //
 //		tryPlaySound(bgm);
 
+		currentCycle++;
 
 		{
 			// add random nugget
@@ -209,7 +250,7 @@ public final class Erina extends World {
 			 */
 
 			final double PROBABILITY =
-					(MAX_NUGGETS - getObjects(Nugget.class).size()) * 0.9 / MAX_NUGGETS;
+					(MAX_NUGGETS - getObjects(Nugget.class).size()) * 0.01 / MAX_NUGGETS;
 
 			if (Math.random() < PROBABILITY) {	// if add nugget
 				addEntity(
@@ -222,8 +263,21 @@ public final class Erina extends World {
 
 
 		{
-			// TODO add random sauce
+			// add random sauce
+			final double PROBABILITY = 1d / 350;
+			/*
+			In the original, sauce was added every 200 cycles plus a random number from 0
+			to 299, so average to 1 sauce every 350 cycles. This probability should give
+			about the same frequency.
+			 */
 
+			if (Math.random() < PROBABILITY) {
+				addEntity(
+						SAUCES.get(Greenfoot.getRandomNumber(SAUCES.size())),
+						Greenfoot.getRandomNumber(WORLD_WIDTH),
+						Greenfoot.getRandomNumber(WORLD_HEIGHT)
+				);
+			}
 		}
 
 
@@ -246,7 +300,7 @@ public final class Erina extends World {
 			}
 
 			// move, handle nuggets, handle sauces
-			ManeuverHandler.handle(this, maneuvers);
+			ManeuverHandler.handle(maneuvers);
 		}
 	}
 
@@ -347,6 +401,11 @@ public final class Erina extends World {
 		return coordinates;
 	}
 
+
+	/**
+	 * Gets the number of times the {@link Erina#act()} method was run.
+	 */
+	public final long getCurrentCycle() { return currentCycle; }
 
 	/**
 	 * Get objects of target type using the specified Function.

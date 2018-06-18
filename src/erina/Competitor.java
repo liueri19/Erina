@@ -131,17 +131,27 @@ public abstract class Competitor
 
 
 	/**
-	 * Consumes the nugget. Remove the nugget from the Erina, update the energy level of
-	 * this Competitor, and update the stats.
+	 * Consumes the Nugget. Removes the nugget from the Erina, updates the energy level of
+	 * this Competitor, and updates the stats.
 	 */
 	final void consume(Nugget nugget) {
+		/*
+		Nugget is consumed when this Competitor comes in contact with the Nugget.
+		 */
 		getWorld().removeEntity(nugget);
 		changeEnergy(nugget.getNuggetValue());
 		getStats().incrementNuggets(nugget);
 	}
 
-	final void consume(Sauce sauce) {
-		// TODO consume sauce
+	/**
+	 * Consumes the Sauce. Updates the energy level of this Competitor and updates the
+	 * stats.
+	 */
+	final void consume(Sauce sauce, int multiplier) {
+		/*
+		Sauce is consumed when the Sauce expires.
+		 */
+		changeEnergy(sauce.getSauceValue() * multiplier);
 	}
 
 

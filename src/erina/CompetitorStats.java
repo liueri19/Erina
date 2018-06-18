@@ -10,7 +10,7 @@ public final class CompetitorStats {
 
 	private volatile Competitor lastAttacker, lastVictim;
 	private volatile int kills, totalDistance, cycles, score, nuggetsCount, nuggetsValue,
-			hitsInflicted, hitsAbsorbed;
+			saucesCount, saucesValue, hitsInflicted, hitsAbsorbed;
 
 
 	/**
@@ -22,6 +22,7 @@ public final class CompetitorStats {
 				0,
 				0,
 				0,
+				0, 0,
 				0, 0,
 				0, 0);
 	}
@@ -38,6 +39,7 @@ public final class CompetitorStats {
 					int cycles,
 					int score,
 					int nuggetsCount, int nuggetsValue,
+					int saucesCount, int saucesValue,
 					int hitsInflicted, int hitsAbsorbed) {
 		this.lastAttacker = lastAttacker;
 		this.lastVictim = lastVictim;
@@ -47,6 +49,8 @@ public final class CompetitorStats {
 		this.score = score;
 		this.nuggetsCount = nuggetsCount;
 		this.nuggetsValue = nuggetsValue;
+		this.saucesCount = saucesCount;
+		this.saucesValue = saucesValue;
 		this.hitsInflicted = hitsInflicted;
 		this.hitsAbsorbed = hitsAbsorbed;
 	}
@@ -64,6 +68,8 @@ public final class CompetitorStats {
 		score = stats.getScore();
 		nuggetsCount = stats.getNuggetsCount();
 		nuggetsValue = stats.getNuggetsValue();
+		saucesCount = stats.getSaucesCount();
+		saucesValue = stats.getSaucesValue();
 		hitsInflicted = stats.getHitsInflicted();
 		hitsAbsorbed = stats.getHitsAbsorbed();
 	}
@@ -116,6 +122,17 @@ public final class CompetitorStats {
 	 * Returns the total value of the Nuggets this Competitor has consumed.
 	 */
 	public int getNuggetsValue() { return nuggetsValue; }
+
+	/**
+	 * Returns the number of Sauces this Competitor has comsumed.
+	 */
+	public int getSaucesCount() { return saucesCount; }
+
+	/**
+	 * Returns the total value of energy this Competitor has acquired from consumed
+	 * Sauces.
+	 */
+	public int getSaucesValue() { return saucesValue; }
 
 
 	void setLastAttacker(Competitor lastAttacker) {
@@ -175,6 +192,32 @@ public final class CompetitorStats {
 	synchronized void incrementNuggetsValueBy(int amount) {
 		nuggetsValue += amount;
 	}
+
+
+	/**
+	 * Updates stats for the consumption of the specified Sauce, applying the multiplier
+	 * for energy level.
+	 * @param sauce	the Sauce consumed
+	 * @param multiplier	the number of Competitors sharing the Sauce at the time of
+	 *                      consumption
+	 */
+	synchronized void incrementSauces(Sauce sauce, int multiplier) {
+		incrementSaucesCount();
+		incrementSaucesValueBy(sauce.getSauceValue() * multiplier);
+	}
+
+
+	void setSaucesCount(int saucesCount) {
+		this.saucesCount = saucesCount;
+	}
+
+	synchronized void incrementSaucesCount() { saucesCount++; }
+
+	public void setSaucesValue(int saucesValue) {
+		this.saucesValue = saucesValue;
+	}
+
+	synchronized void incrementSaucesValueBy(int amount) { saucesValue += amount; }
 
 	void setHitsInflicted(int hitsInflicted) {
 		this.hitsInflicted = hitsInflicted;

@@ -17,7 +17,8 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 	private static final int ITERATIONS_TO_TIMEOUT = 200;
 
 	private final int sauceValue;
-	private int iterationsLeft = ITERATIONS_TO_TIMEOUT;
+	private volatile int iterationsLeft = ITERATIONS_TO_TIMEOUT;
+	private volatile boolean countingDown = false;
 
 	Sauce(Erina world, int sauceValue) {
 		super(world);
@@ -36,12 +37,16 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 
 	public boolean hasTimedOut() { return iterationsLeft <= 0; }
 
+	void startCountdown() {
+		countingDown = true;
+	}
+
 	/**
 	 * Updates this Sauce by decrement the amount of iterations left by 1.
 	 * @return	true if this Sauce has not expired, false otherwise
 	 */
-	boolean updateTimeout() {
-		if (iterationsLeft > 0)
+	synchronized boolean updateTimeout() {
+		if (countingDown && iterationsLeft > 0)
 			iterationsLeft--;
 		return iterationsLeft > 0;
 	}

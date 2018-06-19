@@ -1,5 +1,6 @@
 package erina;
 
+import greenfoot.GreenfootImage;
 import greenfoot.GreenfootSound;
 
 import java.util.*;

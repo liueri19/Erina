@@ -35,6 +35,8 @@ public class TestCompetitor4 extends Competitor {
 	public TestCompetitor4(Erina world, String thisName) {
 		super(world, thisName);
 
+		setImage("images/YellowArrow1.png");
+
 		// if you want a sound for getting hit or making a hit, you need to
 		// assign two string variables to the name of the .wav or .mp3 file
 		// stringSoundHorror and stringSoundSadistic.

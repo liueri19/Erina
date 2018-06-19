@@ -98,6 +98,8 @@ public final class Erina extends World {
 	public Erina() {
 		super(WORLD_WIDTH, WORLD_HEIGHT, 1);
 
+		setBackground("images/bathroom-tile.jpg");
+
 		System.out.println("Welcome to The Erina!");
 
 
@@ -202,13 +204,15 @@ public final class Erina extends World {
 					WORLD_HEIGHT / 2 - c.y
 			));
 
-			// finish init, add to world, submit for updating
 			for (int i = 0; i < competitors.size(); i++) {
 				final Competitor competitor = competitors.get(i);
 				final Coordinate coordinate = coordinates.get(i);
 
+				// finish init
 				competitor.init(new CompetitorActor(competitor));
+				// add to world
 				addEntity(competitor, coordinate.x, coordinate.y);
+				// submit for updating
 				FETCHER.submit(competitor);
 			}
 
@@ -312,7 +316,8 @@ public final class Erina extends World {
 
 			// sauces need to be updated so they are not handled with maneuvers
 			SAUCES.forEach(sauce -> {
-				if (!sauce.getIntersectingObjects(Competitor.class).isEmpty())
+				if (this.getObjects(Sauce.class).contains(sauce) &&
+						!sauce.getIntersectingObjects(Competitor.class).isEmpty())
 					sauce.startCountdown();
 
 				sauce.updateTimeout();

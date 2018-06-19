@@ -40,6 +40,10 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		else {
 			throw new IllegalStateException("Cannot re-initialize Entity");
 		}
+
+		// init image
+		if (image != null)
+			getActor().setImage(image);
 	}
 
 	/** Gets the Actor bound to this Entity. */
@@ -58,11 +62,6 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 	/** @see	Actor#addedToWorld(World)  */
 	protected void addedToWorld(World world) {}	// optionally overridden by subclasses
 
-	/** @see	Actor#getImage()  */
-	public final GreenfootImage getImage() {
-		validate(); return getActor().getImage();
-	}
-
 	/**
 	 * Unlike the greenfoot counterpart, this method does not accept null.
 	 * @see	Actor#getIntersectingObjects(Class)
@@ -71,7 +70,7 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		validate();
 		Erina.rejectActorType(cls);
 		return Erina.getObjectsUsing(
-				c -> getActor().getIntersectingObjectsSuper(c), cls
+				c -> getActor().getIntersectingObjectsActor(c), cls
 		);
 	}
 
@@ -83,7 +82,7 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		validate();
 		Erina.rejectActorType(cls);
 		return Erina.getObjectsUsing(
-				c -> getActor().getNeighboursSuper(distance, diagonal, c), cls
+				c -> getActor().getNeighboursActor(distance, diagonal, c), cls
 		);
 	}
 
@@ -95,7 +94,7 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		validate();
 		Erina.rejectActorType(cls);
 		return Erina.getObjectsUsing(
-				c -> getActor().getObjectsAtOffsetSuper(dx, dy, c), cls
+				c -> getActor().getObjectsAtOffsetActor(dx, dy, c), cls
 		);
 	}
 
@@ -107,7 +106,7 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		validate();
 		Erina.rejectActorType(cls);
 		return Erina.getObjectsUsing(
-				c -> getActor().getObjectsInRangeSuper(radius, c), cls
+				c -> getActor().getObjectsInRangeActor(radius, c), cls
 		);
 	}
 
@@ -157,7 +156,7 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 	 */
 	protected final boolean intersects(Entity<?, ?> other) {
 		validate();
-		return getActor().intersectsSuper(other.getActor());
+		return getActor().intersectsActor(other.getActor());
 	}
 
 	/** @see	Actor#isAtEdge()  */
@@ -169,13 +168,22 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		return getOneIntersectingObject(cls) != null;
 	}
 
+
+	// special handling for images to allow setImage before Actor init
+	private GreenfootImage image;
+
+	/** @see	Actor#getImage()  */
+	public final GreenfootImage getImage() { return image; }
+
 	/** @see	Actor#setImage(String)  */
 	public final void setImage(String fileName) {
-		validate(); getActor().setImage(fileName);
+		setImage(new GreenfootImage(fileName));
 	}
 
 	/** @see	Actor#setImage(GreenfootImage)  */
 	public final void setImage(GreenfootImage image) {
-		validate(); getActor().setImage(image);
+		this.image = image;
+		if (getActor() != null)
+			getActor().setImage(image);
 	}
 }

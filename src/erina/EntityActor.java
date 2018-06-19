@@ -33,15 +33,15 @@ abstract class EntityActor<E extends Entity<E, A>, A extends EntityActor<E, A>>
 	@Override
 	protected final void addedToWorld(World world) { getEntity().addedToWorld(world); }
 
-	<T> List<T> getIntersectingObjectsSuper(Class<T> cls) { return super.getIntersectingObjects(cls); }
-	<T> List<T> getNeighboursSuper(int distance, boolean diagonal, Class<T> cls) {
+	<T> List<T> getIntersectingObjectsActor(Class<T> cls) { return super.getIntersectingObjects(cls); }
+	<T> List<T> getNeighboursActor(int distance, boolean diagonal, Class<T> cls) {
 		return super.getNeighbours(distance, diagonal, cls);
 	}
-	<T> List<T> getObjectsAtOffsetSuper(int dx, int dy, Class<T> cls) { return super.getObjectsAtOffset(dx, dy, cls); }
-	<T> List<T> getObjectsInRangeSuper(int radius, Class<T> cls) { return super.getObjectsInRange(radius, cls); }
+	<T> List<T> getObjectsAtOffsetActor(int dx, int dy, Class<T> cls) { return super.getObjectsAtOffset(dx, dy, cls); }
+	<T> List<T> getObjectsInRangeActor(int radius, Class<T> cls) { return super.getObjectsInRange(radius, cls); }
 	// what's the point of the Class parameter if we are always returning Actor?
 //	Actor getOneIntersectingObjectSuper(Class<?> cls) { return super.getOneIntersectingObject(cls); }
 //	Actor getOneObjectAtOffsetSuper(int dx, int dy, Class<?> cls) { return super.getOneObjectAtOffset(dx, dy, cls); }
-	boolean intersectsSuper(Actor other) { return super.intersects(other); }
-	boolean isTouchingSuper(Class<?> cls) { return super.isTouching(cls); }
+	boolean intersectsActor(Actor other) { return super.intersects(other); }
+	boolean isTouchingActor(Class<?> cls) { return super.isTouching(cls); }
 }

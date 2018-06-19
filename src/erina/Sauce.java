@@ -42,13 +42,13 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 	}
 
 	/**
-	 * Updates this Sauce by decrement the amount of iterations left by 1.
-	 * @return	true if this Sauce has not expired, false otherwise
+	 * Updates the timeout of this Sauce. Decreases the amount of iterations left by 1 if
+	 * {@link Sauce#startCountdown()} has been called on this Sauce and this Sauce has not
+	 * expired.
 	 */
-	synchronized boolean updateTimeout() {
+	synchronized void updateTimeout() {
 		if (countingDown && iterationsLeft > 0)
 			iterationsLeft--;
-		return iterationsLeft > 0;
 	}
 }
 

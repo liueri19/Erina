@@ -15,51 +15,99 @@ final class ManeuverHandler {
 	 * Handles the specified Maneuvers and apply them on the corresponding Competitors.
 	 */
 	static void handle(Map<? extends Competitor, ? extends Maneuver> maneuvers) {
-		// temporary handling, no validation checking
-		// TODO replace with better algorithm
+		// better algorithm?
 
-		// acquire Iterators from Maneuvers
-		final Map<Competitor, Iterator<Action>> iterators = new HashMap<>();
+		// for each maneuver
+		for (Map.Entry<? extends Competitor, ? extends Maneuver> entry :
+				maneuvers.entrySet()) {
+			final Competitor competitor = entry.getKey();
+			final Maneuver maneuver = entry.getValue();
 
-		maneuvers.forEach(
-				(competitor, maneuver) ->
-						iterators.put(competitor, maneuver.getActions().iterator())
-		);
-
-		boolean hasMoreActions = true;
-
-		while (hasMoreActions) {	// until all iterators are depleted
-			hasMoreActions = false;
-
-			// iterate over iterators, process one action from each iterator
-			for (Map.Entry<Competitor, Iterator<Action>> entry : iterators.entrySet()) {
-				final Competitor competitor = entry.getKey();
-				final Iterator<Action> iterator = entry.getValue();
-
-				if (iterator.hasNext()) {
-					hasMoreActions = true;
-					iterator.next().applyTo(competitor);
+			// apply maneuver to the competitor
+			maneuver.applyTo(competitor);
 
 
-					// handle nuggets
-					final List<Nugget> nuggets =
-							competitor.getIntersectingObjects(Nugget.class);
-					if (!nuggets.isEmpty()) {	// if we found nuggets
-						// consume them
-						nuggets.forEach(competitor::consume);
+			// then handle collision with other competitors
 
-						// log consumption
-						Logger.log("Nugget Consumption: %s consumed %s%n",
-								competitor, nuggets);
-					}
+			final List<? extends Competitor> competitors =
+					new ArrayList<>(maneuvers.keySet());
+
+			// update all Competitors' collision states
+			competitors.forEach(Competitor::updateContacts);
+
+			/*
+			The damages from collisions between Competitors is determined by the
+			position of the impact on the Competitors. If the point of impact is
+			in the direction the competitor is facing, 0 damage is dealt on this
+			competitor. If the POI is in the opposite direction of the facing (the
+			hit is on the back of the competitor), full damage is dealt on the
+			competitor. The amount of damage taken at any given angle is defined
+			as:
+			DAMAGE = abs(ANGLE) / PI * HIT_DAMAGE
+			Where DAMAGE is the damage on the competitor taking the hit, ANGLE is
+			the angle between the heading of the competitor and the ray extending
+			from the center of the competitor to the center of the hitter in
+			radians, HIT_DAMAGE is the maximum damage.
+			Damage is applied to both parties of an impact in a single iteration.
+			 */
+
+			while (!competitors.isEmpty()) {	// no for loop, we'll be removing elements
+				final Competitor comp0 = competitors.remove(0);
+				final List<Competitor> contacts = comp0.getNewContacts();
+
+				contacts.forEach(comp1 -> {	// each new contact is a hit
+					competitors.remove(comp1);
+
+					int damage;
+
+					// comp0 and comp1 just collided, apply damage
+					// comp0 as hitter
+					damage = (int) Math.round(
+							calculateImpactAngle(comp0, comp1) / Math.PI * Competitor.HIT_DAMAGE
+					);
+					comp1.takeDamage(damage);
+
+					Logger.log("Collision: %s took %d damage from %s%n",
+							comp1, damage, comp0);
 
 
-					// TODO handle sauce
+					// comp1 as hitter
+					damage = (int) Math.round(
+							calculateImpactAngle(comp1, comp0) / Math.PI * Competitor.HIT_DAMAGE
+					);
+					comp0.takeDamage(damage);
 
-
-					// TODO handle collision with other competitors
-				}
+					Logger.log("Collision: %s took %d damage from %s%n",
+							comp0, damage, comp1);
+				});
 			}
+
+
+			// handle nuggets
+			final List<Nugget> nuggets =
+					competitor.getIntersectingObjects(Nugget.class);
+			if (!nuggets.isEmpty()) {	// if we found nuggets
+				// consume them
+				nuggets.forEach(competitor::consume);
+			}
+
+
+			// Sauces handled in the Erina
 		}
 	}
+
+
+	/**
+	 * Calculates the impact angle. The impact angle is the angle between the heading of
+	 * the hittee and the ray extending from the center of the hittee to the center of the
+	 * hitter in radians.
+	 */
+	private static double calculateImpactAngle(Entity<?, ?> hitter, Entity<?, ?> hittee) {
+		// ANGLE = abs(atan(HITTER_X / HITTER_Y) - HITTEE_HEADING)
+
+		final double hitteeHeading = hittee.getDirection();
+		final double rawAngle = Math.atan(1d * hitter.getX() / hitter.getY());
+		return Math.abs(rawAngle - hitteeHeading);
+	}
+
 }

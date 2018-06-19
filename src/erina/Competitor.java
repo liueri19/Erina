@@ -2,6 +2,8 @@ package erina;
 
 import greenfoot.GreenfootSound;
 
+import java.util.*;
+
 /**
  * The super class of all Competitors.
  *
@@ -141,6 +143,10 @@ public abstract class Competitor
 		getWorld().removeEntity(nugget);
 		changeEnergy(nugget.getNuggetValue());
 		getStats().incrementNuggets(nugget);
+		playSadisticSound();
+
+		Logger.log("Nugget Consumption: %s consumed %s%n",
+				this, nugget);
 	}
 
 	/**
@@ -149,10 +155,72 @@ public abstract class Competitor
 	 */
 	final void consume(Sauce sauce, int multiplier) {
 		/*
-		Sauce is consumed when the Sauce expires.
+		Sauce is not removed because consumption occurs when the Sauce expires.
 		 */
 		changeEnergy(sauce.getSauceValue() * multiplier);
+		getStats().incrementSauces(sauce, multiplier);
+		playSadisticSound();
+
+		Logger.log("Sauce Consumption: %s consumed %s with multiplier of %d%n",
+				this, sauce, multiplier);
 	}
+
+
+	/**
+	 * Apply the specified amount of damage on this Competitor. Plays the horror sound if
+	 * defined.
+	 */
+	final void takeDamage(int damage) {
+		if (damage < 0) throw new IllegalArgumentException("damage cannot be negative");
+
+		changeEnergy(-damage);
+		playHorrorSound();
+	}
+
+
+	/**
+	 * Signals the death of this Competitor. Removes this Competitor from the Erina and
+	 * plays the death sound if defined.
+	 */
+	final void die() {
+		getWorld().removeEntity(this);
+		playDeathSound();
+
+		Logger.log("Death: %s died%n", this);
+	}
+
+
+
+	////////////////////
+	// collision state stuff
+
+	/** Competitors intersecting with this Competitor in the previous update. */
+	private final Set<Competitor> previousContacts = new HashSet<>();
+	/** Competitors currently intersecting with this Competitor. */
+	private final Set<Competitor> currentContacts = new HashSet<>();
+
+	/**
+	 * Updates the contact states of this Competitor.
+	 */
+	final void updateContacts() {
+		previousContacts.clear();
+		previousContacts.addAll(currentContacts);
+
+		currentContacts.clear();
+		currentContacts.addAll(getIntersectingObjects(Competitor.class));
+	}
+
+	/**
+	 * Returns a List of intersecting Competitors that was not intersecting before the
+	 * previous call of {@link Competitor#updateContacts()}.
+	 */
+	final List<Competitor> getNewContacts() {
+		final List<Competitor> newContacts = new ArrayList<>(currentContacts);
+		newContacts.removeAll(previousContacts);
+		return newContacts;
+	}
+
+	////////////////////
 
 
 	@Override

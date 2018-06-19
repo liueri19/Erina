@@ -143,6 +143,14 @@ public class Maneuver {
 
 
 	/**
+	 * Apply all Actions in this Maneuver to the specified Competitor.
+	 */
+	final void applyTo(Competitor competitor) {
+		actions.forEach(action -> action.applyTo(competitor));
+	}
+
+
+	/**
 	 * Returns a string representation of this Maneuver.
 	 * @return	the string representation
 	 */
@@ -158,7 +166,7 @@ public class Maneuver {
 			while (it.hasNext()) {
 				final Action action = it.next();
 				builder
-						.append("\nthen ")
+						.append(" \nthen ")
 						.append(action);
 			}
 		}
@@ -173,5 +181,58 @@ public class Maneuver {
 	public String toShortString() {
 		return "(" + getInitialX() + ", " + getInitialY() + ") -> ("
 				+ getX() + ", " + getY() + ")";
+	}
+
+
+
+	/**
+	 * An Action is a single step in a Maneuver. An Action can be applied to an Entity.
+	 *
+	 * @version alpha
+	 * @author Eric
+	 */
+	private abstract static class Action {
+		abstract void applyTo(Competitor competitor);
+	}
+
+
+	/** Represents an advancement of a certain distance. */
+	private static final class Advance extends Action {
+		private final int distance, cost;
+
+		Advance(int distance) {
+			// if malicious attempt to cause overflow
+			if (distance == Integer.MIN_VALUE)
+				distance = distance+1;
+
+			this.distance = distance;
+
+			cost = Math.abs(distance);
+		}
+
+		@Override
+		void applyTo(Competitor competitor) {
+			competitor.changeEnergy(-cost);
+			competitor.getActor().move(distance);
+		}
+
+		@Override
+		public String toString() { return "advance " + distance + " units"; }
+	}
+
+
+	/** Represents a clockwise turn of certain degrees. */
+	private static final class Turn extends Action {
+		private final int degrees;
+
+		Turn(int degrees) { this.degrees = degrees; }
+
+		@Override
+		void applyTo(Competitor competitor) {
+			competitor.getActor().turn(degrees);
+		}
+
+		@Override
+		public String toString() { return "turn clockwise " + degrees + " degrees"; }
 	}
 }

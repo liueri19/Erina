@@ -32,6 +32,9 @@ class Logger {
 //		OUTPUT = tempWriter;
 	}
 
+	/**
+	 * Logs a message like printf.
+	 */
 	static void log(String message, Object... args) {
 		message = String.format(message, args);
 

@@ -1,5 +1,6 @@
 package erina;
 
+import competitors.*;
 import greenfoot.Actor;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootSound;
@@ -180,18 +181,18 @@ public final class Erina extends World {
 			final List<Competitor> competitors = new ArrayList<>();
 
 			// competitors added here, follow this pattern to add/remove competitors
-//			competitors.add(new TestCompetitor2(this, "TC_2"));
-//			competitors.add(new TestCompetitor3(this, "TC_3"));
-//			competitors.add(new TestCompetitor4(this, "TC_4"));
-//			competitors.add(new TestCompetitor5(this, "TC_5"));
-//			competitors.add(new TestCompetitor6(this, "TC_6"));
-//			competitors.add(new TestCompetitor7(this, "TC_7"));
-			competitors.add(new Competitor(this, "DebugComp") {
-				@Override
-				public Maneuver doManeuver() {
-					return new Maneuver(this).turn(-3).move(5);
-				}
-			});
+			competitors.add(new TestCompetitor2(this, "TC_2"));
+			competitors.add(new TestCompetitor3(this, "TC_3"));
+			competitors.add(new TestCompetitor4(this, "TC_4"));
+			competitors.add(new TestCompetitor5(this, "TC_5"));
+			competitors.add(new TestCompetitor6(this, "TC_6"));
+			competitors.add(new TestCompetitor7(this, "TC_7"));
+//			competitors.add(new Competitor(this, "DebugComp") {
+//				@Override
+//				public Maneuver doManeuver() {
+//					return new Maneuver(this).turn(-3).move(5);
+//				}
+//			});
 
 			final List<Coordinate> coordinates =
 					getCoordinatesFor(competitors.size(), WORLD_WIDTH, WORLD_HEIGHT);
@@ -219,15 +220,15 @@ public final class Erina extends World {
 	@Override
 	public void act() {
 
-//		if (isFirstAct) {
-//			isFirstAct = false;
-//			tryPlaySounds(startSounds);
-//
-//			while (startSounds.get(startSounds.size()-1).isPlaying())
-//				Greenfoot.delay(30);
-//		}
-//
-//		tryPlaySound(bgm);
+		if (isFirstAct) {
+			isFirstAct = false;
+			tryPlaySounds(startSounds);
+
+			while (startSounds.get(startSounds.size()-1).isPlaying())
+				Greenfoot.delay(30);
+		}
+
+		tryPlaySound(bgm);
 
 		currentCycle++;
 
@@ -254,7 +255,7 @@ public final class Erina extends World {
 
 			if (Math.random() < PROBABILITY) {	// if add nugget
 				addEntity(
-						NUGGETS.get(Greenfoot.getRandomNumber(MAX_NUGGETS)),
+						NUGGETS.get(Greenfoot.getRandomNumber(NUGGETS.size())),
 						Greenfoot.getRandomNumber(WORLD_WIDTH),
 						Greenfoot.getRandomNumber(WORLD_HEIGHT)
 				);
@@ -282,8 +283,9 @@ public final class Erina extends World {
 
 
 		{
-			// handle maneuvers
+			// update stuff
 
+			// collect maneuvers from competitors
 			final Map<Competitor, Maneuver> maneuvers = new HashMap<>();
 
 			for (Entity<?, ?> entity : ENTITIES) {
@@ -299,8 +301,32 @@ public final class Erina extends World {
 					maneuvers.put(competitor, maneuver);
 			}
 
-			// move, handle nuggets, handle sauces
-			ManeuverHandler.handle(maneuvers);
+			// move, handle nuggets
+			try {
+				ManeuverHandler.handle(maneuvers);
+			}
+			catch (Exception e) {	// DEBUG
+				e.printStackTrace();
+				System.out.println(maneuvers);
+			}
+
+			// sauces need to be updated so they are not handled with maneuvers
+			SAUCES.forEach(sauce -> {
+				if (!sauce.getIntersectingObjects(Competitor.class).isEmpty())
+					sauce.startCountdown();
+
+				sauce.updateTimeout();
+
+				if (sauce.hasTimedOut()) {
+					// timed out, give energy to intersecting competitors
+					final List<Competitor> intersectingCompetitors =
+							sauce.getIntersectingObjects(Competitor.class);
+					final int multiplier = intersectingCompetitors.size();
+					intersectingCompetitors.forEach(
+							competitor -> competitor.consume(sauce, multiplier)
+					);
+				}
+			});
 		}
 	}
 
@@ -408,7 +434,8 @@ public final class Erina extends World {
 	public final long getCurrentCycle() { return currentCycle; }
 
 	/**
-	 * Get objects of target type using the specified Function.
+	 * Get objects of target type using the specified Function, removing all Actor
+	 * instances from the result.
 	 * If the targetType is or is subtype of Entity, the specified Function is invoked with EntityActor class.
 	 * The returned List should never contain Actor objects.
 	 * @param getter	the Function to get objects from
@@ -438,7 +465,7 @@ public final class Erina extends World {
 					.collect(Collectors.toList());
 		}
 		else {
-			// understanding this portion is left as an exercise to the reader :)
+			// understanding this portion is left as an exercise to the reader
 			return getter.apply(targetType).stream()
 					.filter(obj -> !(obj instanceof Actor))
 					.filter(obj -> targetType.isAssignableFrom(obj.getClass()))
@@ -449,7 +476,7 @@ public final class Erina extends World {
 
 
 	/**
-	 * Returns all objects of the specified type.
+	 * Returns all objects of the specified type except Actor instances.
 	 *
 	 * <p>In order to prevent returning references to Actor objects, this method modifies
 	 * the behaviour of {@link World#getObjects(Class)} in two important ways. If an instance
@@ -476,7 +503,8 @@ public final class Erina extends World {
 
 
 	/**
-	 * Returns all objects at the given location of the specified type.
+	 * Returns all objects at the given location of the specified type except Actor
+	 * instances.
 	 *
 	 * <p>In order to prevent returning references to Actor objects, this method modifies
 	 * the behaviour of {@link World#getObjectsAt(int, int, Class)} in two important ways.
@@ -530,6 +558,9 @@ public final class Erina extends World {
 	void removeEntity(Entity<?, ?> entity) {
 		ENTITIES.remove(entity);
 		removeObject(entity.getActor());
+
+		if (entity instanceof Maneuverable)	// includes null check
+			FETCHER.remove((Maneuverable) entity);
 	}
 
 

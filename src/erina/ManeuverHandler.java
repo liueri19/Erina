@@ -65,20 +65,14 @@ final class ManeuverHandler {
 					damage = (int) Math.round(
 							calculateImpactAngle(comp0, comp1) / Math.PI * Competitor.HIT_DAMAGE
 					);
-					comp1.takeDamage(damage);
-
-					Logger.log("Collision: %s took %d damage from %s%n",
-							comp1, damage, comp0);
+					comp1.takeDamageFrom(comp0, damage);
 
 
 					// comp1 as hitter
 					damage = (int) Math.round(
 							calculateImpactAngle(comp1, comp0) / Math.PI * Competitor.HIT_DAMAGE
 					);
-					comp0.takeDamage(damage);
-
-					Logger.log("Collision: %s took %d damage from %s%n",
-							comp0, damage, comp1);
+					comp0.takeDamageFrom(comp1, damage);
 				});
 			}
 

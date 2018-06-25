@@ -54,6 +54,9 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 	void resetTimeout() { iterationsLeft = ITERATIONS_TO_TIMEOUT; }
 
 
+	/**
+	 * Returns a string describing the amount of energy this Sauce has.
+	 */
 	@Override
 	public String toString() {
 		return "Sauce_" + sauceValue;

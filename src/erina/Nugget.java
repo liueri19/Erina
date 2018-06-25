@@ -20,6 +20,9 @@ public final class Nugget extends Entity<Nugget, NuggetActor> {
 	 */
 	public int getNuggetValue() { return nuggetValue; }
 
+	/**
+	 * Returns a string describing the amount of energy this Nugget has.
+	 */
 	@Override
 	public String toString() {
 		return "Nugget_" + nuggetValue;

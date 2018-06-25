@@ -152,7 +152,8 @@ public class Maneuver {
 
 
 	/**
-	 * Returns a string representation of this Maneuver.
+	 * Returns a string representation of this Maneuver. The returned string describes the
+	 * steps to be taken to complete this Maneuver.
 	 * @return	the string representation
 	 */
 	@Override
@@ -176,7 +177,8 @@ public class Maneuver {
 	}
 
 	/**
-	 * Returns a shorter string representation of this Maneuver.
+	 * Returns a shorter string representation of this Maneuver. The returned string
+	 * describes the starting point and ending point of this Maneuver.
 	 * @return	the string representation
 	 */
 	public String toShortString() {

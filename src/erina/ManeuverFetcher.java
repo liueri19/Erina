@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
- * This class helps to clear Maneuvers from Maneuverables. Each Maneuverable is handled by
+ * This class helps to get Maneuvers from Maneuverables. Each Maneuverable is handled by
  * a separate thread.
  *
  * @version alpha

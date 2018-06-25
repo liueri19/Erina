@@ -43,13 +43,14 @@ public abstract class Competitor
 		return stats;
 	}
 
-	/**
-	 * Updates the statistics of this Competitor to the specified values.
-	 * @see	CompetitorStats
-	 */
-	final void updateStats(CompetitorStats stats) {
-		this.stats = stats;
-	}
+	// CompetitorStats mutable, no need for this
+//	/**
+//	 * Updates the statistics of this Competitor to the specified values.
+//	 * @see	CompetitorStats
+//	 */
+//	final void updateStats(CompetitorStats stats) {
+//		this.stats = stats;
+//	}
 
 
 	/**
@@ -175,24 +176,59 @@ public abstract class Competitor
 	/**
 	 * Apply the specified amount of damage on this Competitor. Plays the horror sound if
 	 * defined.
+	 * @param attacker the Competitor that inflicted damage on this Competitor
+	 * @see	Competitor#inflictDamageOn(Competitor)
 	 */
-	final void takeDamage(int damage) {
+	final void takeDamageFrom(Competitor attacker, int damage) {
 		if (damage < 0) throw new IllegalArgumentException("damage cannot be negative");
 
 		changeEnergy(-damage);
+		attacker.inflictDamageOn(this);
+		getStats().incrementHitsAbsorbed();
+		getStats().setLastAttacker(attacker);
 		playHorrorSound();
+
+		Logger.log("Collision: %s took %d damage from %s%n",
+				this, damage, attacker);
+	}
+
+
+	/**
+	 * Updates the CompetitorStats of this Competitor to reflect a hit on {@code target}.
+	 * This method does not apply any damage; damage is applied in
+	 * {@link Competitor#takeDamageFrom(Competitor, int)}.
+	 * @see	Competitor#takeDamageFrom(Competitor, int)
+	 */
+	private void inflictDamageOn(Competitor target) {
+		getStats().incrementHitsInflicted();
+		getStats().setLastVictim(target);
 	}
 
 
 	/**
 	 * Signals the death of this Competitor. Removes this Competitor from the Erina and
-	 * plays the death sound if defined.
+	 * plays the death sound if defined. This method logs the death message.
+	 * @param attacker the Competitor that killed this Competitor
+	 * @see	Competitor#kill(Competitor)
 	 */
-	final void die() {
+	final void die(Competitor attacker) {
 		getWorld().removeEntity(this);
+		attacker.kill(this);
 		playDeathSound();
 
-		Logger.log("Death: %s died%n", this);
+		Logger.log("Death: %s is killed by %s%n", this, attacker);
+	}
+
+
+	/**
+	 * Signals a kill completed by this Competitor. This method does not remove
+	 * {@code victim} from the Erina, it only updates the CompetitorStats of this
+	 * Competitor and plays the kill sound if defined.
+	 * @see	Competitor#die(Competitor)
+	 */
+	private void kill(Competitor victim) {
+		getStats().incrementKills();
+		playKillSound();
 	}
 
 
@@ -229,6 +265,7 @@ public abstract class Competitor
 	////////////////////
 
 
+	/** Returns the identifier of this Competitor. */
 	@Override
 	public String toString() { return name; }
 }

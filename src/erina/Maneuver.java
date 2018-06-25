@@ -59,6 +59,7 @@ public class Maneuver {
 	 * Issues a move of the specified distance in the current direction.
 	 * @param distance	the amount to move
 	 * @return	this instance
+	 * @see	greenfoot.Actor#move(int)
 	 */
 	public synchronized Maneuver move(int distance) {
 		actions.add(new Advance(distance));
@@ -77,6 +78,7 @@ public class Maneuver {
 	 * Issues a turn of the specified angle. Positive angles are considered clockwise.
 	 * @param degrees	the amount to turn in degrees
 	 * @return	this instance
+	 * @see	greenfoot.Actor#turn(int)
 	 */
 	public synchronized Maneuver turn(int degrees) {
 		actions.add(new Turn(degrees));
@@ -91,13 +93,12 @@ public class Maneuver {
 	 * @param x	the x coordinate of the cell to turn to
 	 * @param y	the y coordinate of the cell to turn to
 	 * @return	this instance
+	 * @see	greenfoot.Actor#turnTowards(int, int)
 	 */
-	public synchronized Maneuver turnTo(int x, int y) {
-		final double rads =
-				Math.atan(
-						(double) (y - getY()) / (x - getX())
-				);
-		final int degrees = - (int) Math.toDegrees(rads);
+	public synchronized Maneuver turnTowards(int x, int y) {
+		double rads = Math.atan2(y - getY(), x - getX());
+
+		final int degrees = (int) Math.round(Math.toDegrees(rads));
 
 		return turn(degrees - getDirection());
 	}
@@ -220,7 +221,6 @@ public class Maneuver {
 		public String toString() { return "advance " + distance + " units"; }
 	}
 
-
 	/** Represents a clockwise turn of certain degrees. */
 	private static final class Turn extends Action {
 		private final int degrees;
@@ -233,6 +233,10 @@ public class Maneuver {
 		}
 
 		@Override
-		public String toString() { return "turn clockwise " + degrees + " degrees"; }
+		public String toString() {
+			return degrees >= 0 ?
+					"turn clockwise " + degrees + " degrees" :
+					"turn counter-clockwise " + -degrees + " degrees";
+		}
 	}
 }

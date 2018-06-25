@@ -114,7 +114,7 @@ public class TestCompetitor4 extends Competitor {
 		if ((xNow <= EDGE_MARGIN) || (yNow <= EDGE_MARGIN) || (xNow >= worldWidth - EDGE_MARGIN) || (yNow >= worldHeight - EDGE_MARGIN)) {
 			// move to the middle...
 			//legalTurnTowards((worldWidth/2), (worldHeight/2));
-			maneuver.turnTo((worldWidth / 2), (worldHeight / 2));
+			maneuver.turnTowards((worldWidth / 2), (worldHeight / 2));
 			newDistance = Greenfoot.getRandomNumber(100);     // get a new distance
 			maneuver.move(newDistance);
 		}
@@ -140,7 +140,7 @@ public class TestCompetitor4 extends Competitor {
 			if (newY < 0) newY = 0;
 			if (newY > worldHeight - 50) newY = worldHeight - 50;
 
-			maneuver.turnTo(newX, newY);
+			maneuver.turnTowards(newX, newY);
 			newDistance = Greenfoot.getRandomNumber(10);     // get a new distance
 			maneuver.move(newDistance);
 

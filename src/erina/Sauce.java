@@ -50,6 +50,14 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 		if (countingDown && iterationsLeft > 0)
 			iterationsLeft--;
 	}
+
+	void resetTimeout() { iterationsLeft = ITERATIONS_TO_TIMEOUT; }
+
+
+	@Override
+	public String toString() {
+		return "Sauce_" + sauceValue;
+	}
 }
 
 

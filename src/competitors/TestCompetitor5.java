@@ -102,7 +102,7 @@ public class TestCompetitor5 extends Competitor {
 		if (justInflictedHitCooldown > 0) {
 			justInflictedHitCooldown--;
 			//turnTowards((worldWidth/2), (worldHeight/2));
-			return maneuver.turnTo((worldWidth / 2), (worldHeight / 2))
+			return maneuver.turnTowards((worldWidth / 2), (worldHeight / 2))
 					.move(10);
 		}
 
@@ -120,7 +120,7 @@ public class TestCompetitor5 extends Competitor {
 			//System.out.printf("listInRange.size() is %d,\n", listInRange.size());
 			targetX = targetCompetitor.getX();                      // Get its x coordinate
 			targetY = targetCompetitor.getY();                      // Get its y coordinate
-			maneuver.turnTo(targetX, targetY);                     // Got its location, now go after 'em!
+			maneuver.turnTowards(targetX, targetY);                     // Got its location, now go after 'em!
 			//turnTowards(targetX, targetY);
 
 			// where are we now?
@@ -158,7 +158,7 @@ public class TestCompetitor5 extends Competitor {
 			// if we're at one of the edges, turn towards the middle of the world...
 			if ((xNow <= EDGE_MARGIN) || (yNow <= EDGE_MARGIN) || (xNow >= worldWidth - EDGE_MARGIN) || (yNow >= worldHeight - EDGE_MARGIN)) {
 				// turn if we have energy
-				maneuver.turnTo((worldWidth / 2), (worldHeight / 2));
+				maneuver.turnTowards((worldWidth / 2), (worldHeight / 2));
 				//turnTowards((worldWidth/2), (worldHeight/2));
 				if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
 					maneuver.move(moveDistance);

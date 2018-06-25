@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
- * This class helps to fetch Maneuvers from Maneuverables. Each Maneuverable is handled by
+ * This class helps to clear Maneuvers from Maneuverables. Each Maneuverable is handled by
  * a separate thread.
  *
  * @version alpha
@@ -26,8 +26,8 @@ final class ManeuverFetcher {
 
 	/*
 	for checking if we are already fetching for a certain Maneuverable.
-	if we are, it would be in this map with a matching future, and we should not
-	resubmit a fetch task.
+	if we are, it would be in this map with a matching future, and we should not submit a
+	duplicated clear task.
 	 */
 	private final Map<Maneuverable, Future<?>> maneuverableToFuture =
 			new ConcurrentHashMap<>();
@@ -103,17 +103,31 @@ final class ManeuverFetcher {
 	}
 
 	/**
+	 * Marks the Maneuverable available for supplying further Maneuvers.
+	 * @return the next Maneuver supplied by the specified Maneuverable, or null if the
+	 * Maneuverable is not ready or is not being fetched by this ManeuverFetcher.
+	 * @see ManeuverFetcher#get(Maneuverable)
+	 */
+	Maneuver clear(Maneuverable maneuverable) {
+		maneuverableToFuture.remove(maneuverable);
+		Optional<Maneuver> optional =
+				maneuverableToManeuver.put(maneuverable, Optional.empty());
+		if (optional != null)
+			return optional.orElse(null);
+		return null;
+	}
+
+	/**
 	 * Fetches the next Maneuver of the specified Maneuverable. If the Maneuverable is not
 	 * ready for the next Maneuver at the time of invocation, null is returned. However
 	 * null may also mean that the specified Maneuverable is not being fetched by this
 	 * ManeuverFetcher.
 	 * @return	the next Maneuver supplied by the specified Maneuverable, or null if the
 	 * Maneuverable is not ready or is not being fetched by this ManeuverFetcher.
+	 * @see ManeuverFetcher#clear(Maneuverable)
 	 */
-	Maneuver fetch(Maneuverable maneuverable) {
-		maneuverableToFuture.remove(maneuverable);
-		Optional<Maneuver> optional =
-				maneuverableToManeuver.put(maneuverable, Optional.empty());
+	Maneuver get(Maneuverable maneuverable) {
+		Optional<Maneuver> optional = maneuverableToManeuver.get(maneuverable);
 		if (optional != null)
 			return optional.orElse(null);
 		return null;

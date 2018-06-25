@@ -1,10 +1,7 @@
 package erina;
 
 import competitors.*;
-import greenfoot.Actor;
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootSound;
-import greenfoot.World;
+import greenfoot.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -187,14 +184,63 @@ public final class Erina extends World {
 			competitors.add(new TestCompetitor3(this, "TC_3"));
 			competitors.add(new TestCompetitor4(this, "TC_4"));
 			competitors.add(new TestCompetitor5(this, "TC_5"));
-			competitors.add(new TestCompetitor6(this, "TC_6"));
-			competitors.add(new TestCompetitor7(this, "TC_7"));
-//			competitors.add(new Competitor(this, "DebugComp") {
+			competitors.add(new EvanSchimberg(this, "Evan"));
+			competitors.add(new Jstew(this, "Jstew"));
+
+//			competitors.add(new TestCompetitor6(this, "TC_6"));
+//			competitors.add(new TestCompetitor7(this, "TC_7"));
+
+//			competitors.add(new Competitor(this, "TurnToTester") {
+//				boolean flag;
 //				@Override
 //				public Maneuver doManeuver() {
-//					return new Maneuver(this).turn(-3).move(5);
+//					flag = !flag;
+//					final Maneuver m =
+////							flag ?
+////							new Maneuver(this).turnTowards(0, 0) :
+//							new Maneuver(this).turnTowards(Erina.WORLD_WIDTH, 0);
+//					System.out.println(m);
+//					return m;
 //				}
 //			});
+//			competitors.add(new Competitor(this, "CoordinateTester") {
+//				boolean flag;
+//				@Override
+//				public Maneuver doManeuver() {
+//					System.out.printf("(%d, %d)%n", getX(), getY());
+//					final Maneuver m = new Maneuver(this);
+//					if (!flag) {
+//						m.turn(-90);
+//						flag = true;
+//					}
+//					return m.move(-10);
+//				}
+//			});
+//			competitors.get(0).setImage("images/YellowArrow1.png");
+
+//			competitors.add(new Competitor(this, "CollisionTester0") {
+//				@Override
+//				public Maneuver doManeuver() {
+//					return null;
+//				}
+//			});
+//			competitors.add(new Competitor(this, "CollisionTester1") {
+//				@Override
+//				public Maneuver doManeuver() {
+//					final Maneuver maneuver = new Maneuver(this);
+//
+//					final Competitor target = getObjects(Competitor.class).get(0);
+//					maneuver.turnTowards(target.getX(), target.getY());
+//
+//					if (!getIntersectingObjects(Competitor.class).isEmpty())
+//						maneuver.move(-10);
+//					else
+//						maneuver.move(10);
+//
+//					return maneuver;
+//				}
+//			});
+//			competitors.get(1).setImage("images/YellowArrow1.png");
 
 			final List<Coordinate> coordinates =
 					getCoordinatesFor(competitors.size(), WORLD_WIDTH, WORLD_HEIGHT);
@@ -212,6 +258,13 @@ public final class Erina extends World {
 				competitor.init(new CompetitorActor(competitor));
 				// add to world
 				addEntity(competitor, coordinate.x, coordinate.y);
+				// add NameTags
+				final Coordinate offset = getNameTagOffset(competitor);
+				addObject(competitor.getNameTag(),
+						competitor.getX() + offset.x,
+						competitor.getY() - offset.y
+				);
+
 				// submit for updating
 				FETCHER.submit(competitor);
 			}
@@ -224,15 +277,15 @@ public final class Erina extends World {
 	@Override
 	public void act() {
 
-		if (isFirstAct) {
-			isFirstAct = false;
-			tryPlaySounds(startSounds);
-
-			while (startSounds.get(startSounds.size()-1).isPlaying())
-				Greenfoot.delay(30);
-		}
-
-		tryPlaySound(bgm);
+//		if (isFirstAct) {
+//			isFirstAct = false;
+//			tryPlaySounds(startSounds);
+//
+//			while (startSounds.get(startSounds.size()-1).isPlaying())
+//				Greenfoot.delay(30);
+//		}
+//
+//		tryPlaySound(bgm);
 
 		currentCycle++;
 
@@ -299,37 +352,43 @@ public final class Erina extends World {
 					competitor = (Competitor) entity;
 				else continue;
 
-				final Maneuver maneuver = FETCHER.fetch(competitor);
+				final Maneuver maneuver = FETCHER.get(competitor);
 
 				if (maneuver != null)
 					maneuvers.put(competitor, maneuver);
 			}
 
 			// move, handle nuggets
-			try {
-				ManeuverHandler.handle(maneuvers);
-			}
-			catch (Exception e) {	// DEBUG
-				e.printStackTrace();
-				System.out.println(maneuvers);
-			}
+			ManeuverHandler.handle(maneuvers);
+
+			// fetch next maneuvers
+			ENTITIES.stream()
+					.filter(entity -> entity instanceof Competitor)
+					.map(entity -> (Competitor) entity)
+					.forEach(FETCHER::clear);
 
 			// sauces need to be updated so they are not handled with maneuvers
 			SAUCES.forEach(sauce -> {
-				if (this.getObjects(Sauce.class).contains(sauce) &&
-						!sauce.getIntersectingObjects(Competitor.class).isEmpty())
-					sauce.startCountdown();
+				// if this sauce is in the world
+				if (this.getObjects(Sauce.class).contains(sauce)) {
+					// if contact with competitor, start countdown
+					if (!sauce.getIntersectingObjects(Competitor.class).isEmpty())
+						sauce.startCountdown();
 
-				sauce.updateTimeout();
+					sauce.updateTimeout();
 
-				if (sauce.hasTimedOut()) {
-					// timed out, give energy to intersecting competitors
-					final List<Competitor> intersectingCompetitors =
-							sauce.getIntersectingObjects(Competitor.class);
-					final int multiplier = intersectingCompetitors.size();
-					intersectingCompetitors.forEach(
-							competitor -> competitor.consume(sauce, multiplier)
-					);
+					if (sauce.hasTimedOut()) {
+						// timed out, give energy to intersecting competitors
+						final List<Competitor> intersectingCompetitors =
+								sauce.getIntersectingObjects(Competitor.class);
+						final int multiplier = intersectingCompetitors.size();
+						intersectingCompetitors.forEach(
+								competitor -> competitor.consume(sauce, multiplier)
+						);
+
+						removeEntity(sauce);
+						sauce.resetTimeout();
+					}
 				}
 			});
 		}
@@ -433,6 +492,18 @@ public final class Erina extends World {
 	}
 
 
+	private static Coordinate getNameTagOffset(Competitor competitor) {
+		final GreenfootImage image = competitor.getImage();
+
+		if (image != null) {
+			return new Coordinate(image.getWidth() / 2, image.getHeight() / 2);
+		}
+		else {
+			return new Coordinate(10, 10);
+		}
+	}
+
+
 	/**
 	 * Gets the number of times the {@link Erina#act()} method was run.
 	 */
@@ -470,7 +541,6 @@ public final class Erina extends World {
 					.collect(Collectors.toList());
 		}
 		else {
-			// understanding this portion is left as an exercise to the reader
 			return getter.apply(targetType).stream()
 					.filter(obj -> !(obj instanceof Actor))
 					.filter(obj -> targetType.isAssignableFrom(obj.getClass()))

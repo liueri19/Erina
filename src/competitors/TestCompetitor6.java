@@ -129,7 +129,7 @@ public class TestCompetitor6 extends Competitor {
 			int variationX = Greenfoot.getRandomNumber(30) - 15;
 			int variationY = Greenfoot.getRandomNumber(30) - 15;
 
-			maneuver.turnTo(targetX + variationX, targetY + variationY);
+			maneuver.turnTowards(targetX + variationX, targetY + variationY);
 
 			newDistance = Greenfoot.getRandomNumber(6);             // ...a  random distance, hopefully...
 			if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
@@ -143,7 +143,7 @@ public class TestCompetitor6 extends Competitor {
 		else if (justInflictedHitCooldown > 0) {
 			justInflictedHitCooldown--;
 			//turnTowards((worldWidth/2), (worldHeight/2));
-			maneuver.turnTo((worldWidth / 2), (worldHeight / 2));
+			maneuver.turnTowards((worldWidth / 2), (worldHeight / 2));
 			if (getEnergyLevel() > ENERGY_NORMAL_RESERVE)
 				maneuver.move(5);
 			return maneuver;
@@ -175,7 +175,7 @@ public class TestCompetitor6 extends Competitor {
 				int variationX = Greenfoot.getRandomNumber(30) - 15;
 				int variationY = Greenfoot.getRandomNumber(30) - 15;
 
-				maneuver.turnTo(targetX + variationX, targetY + variationY);
+				maneuver.turnTowards(targetX + variationX, targetY + variationY);
 
 
 			}
@@ -200,7 +200,7 @@ public class TestCompetitor6 extends Competitor {
 			// if we're at one of the edges, turn towards the middle of the world...
 			if ((xNow <= EDGE_MARGIN) || (yNow <= EDGE_MARGIN) || (xNow >= worldWidth - EDGE_MARGIN) || (yNow >= worldHeight - EDGE_MARGIN)) {
 				// turn if we have energy
-				maneuver.turnTo((worldWidth / 2), (worldHeight / 2));
+				maneuver.turnTowards((worldWidth / 2), (worldHeight / 2));
 				//turnTowards((worldWidth/2), (worldHeight/2));
 
 			}

@@ -1,6 +1,5 @@
 package erina;
 
-import greenfoot.GreenfootImage;
 import greenfoot.GreenfootSound;
 
 import java.util.*;
@@ -33,6 +32,8 @@ public abstract class Competitor
 
 	private CompetitorStats stats;
 
+	private final NameTag nameTag;
+
 
 	/**
 	 * Gets a CompetitorStats object holding the statistics about this Competitor.
@@ -58,8 +59,9 @@ public abstract class Competitor
 	 */
 	public Competitor(Erina world, String name) {
 		super(world);
-		this.name = name;
 		stats = new CompetitorStats();
+		this.name = name;
+		nameTag = new NameTag(name);
 	}
 
 
@@ -131,6 +133,9 @@ public abstract class Competitor
 
 	/** Returns the identifier of this Competitor. */
 	public final String getName() { return name; }
+
+	/** Returns the NameTag associated with this Competitor. */
+	final NameTag getNameTag() { return nameTag; }
 
 
 	/**
@@ -243,5 +248,16 @@ class CompetitorActor extends EntityActor<Competitor, CompetitorActor> {
 
 	CompetitorActor(Competitor entity) {
 		super(entity);
+	}
+
+	@Override
+	public void move(int distance) {
+		super.move(distance);
+
+		// make the NameTag follow
+		final NameTag nameTag = getEntity().getNameTag();
+		nameTag.setRotation(getRotation());
+		nameTag.move(distance);
+		nameTag.setRotation(0);
 	}
 }

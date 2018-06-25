@@ -30,7 +30,7 @@ final class ManeuverHandler {
 			// then handle collision with other competitors
 
 			final List<? extends Competitor> competitors =
-					new ArrayList<>(maneuvers.keySet());
+					new LinkedList<>(maneuvers.keySet());
 
 			// update all Competitors' collision states
 			competitors.forEach(Competitor::updateContacts);
@@ -103,11 +103,14 @@ final class ManeuverHandler {
 	 * hitter in radians.
 	 */
 	private static double calculateImpactAngle(Entity<?, ?> hitter, Entity<?, ?> hittee) {
-		// ANGLE = abs(atan(HITTER_X / HITTER_Y) - HITTEE_HEADING)
+		// ANGLE = abs(atan(Delta_Y / Delta_X) - HITTEE_HEADING)
 
 		final double hitteeHeading = hittee.getDirection();
-		final double rawAngle = Math.atan(1d * hitter.getX() / hitter.getY());
-		return Math.abs(rawAngle - hitteeHeading);
+		// so unicode characters are valid identifiers...
+		final double Δx = hitter.getX() - hittee.getX();
+		final double Δy = hitter.getY() - hittee.getY();
+		final double θ = Math.atan2(Δy, Δx);
+		return Math.abs(θ - Math.toRadians(hitteeHeading)) % Math.PI;
 	}
 
 }

@@ -87,14 +87,17 @@ public final class CompetitorStats {
 	public Competitor getLastVictim() { return lastVictim; }
 
 	/**
-	 * Returns the number of hits this
+	 * Returns the number of hits this Competitor has inflicted.
 	 */
 	public int getHitsInflicted() { return hitsInflicted; }
 
+	/**
+	 * Returns the number of hits this Competitor has absorbed.
+	 */
 	public int getHitsAbsorbed() { return hitsAbsorbed; }
 
 	/**
-	 * Returns the number of kills this Competitor achieved.
+	 * Returns the number of kills this Competitor completed.
 	 */
 	public int getKills() { return kills; }
 

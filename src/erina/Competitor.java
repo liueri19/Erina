@@ -227,6 +227,8 @@ public abstract class Competitor
 	 * @see	Competitor#die(Competitor)
 	 */
 	private void kill(Competitor victim) {
+		// no we don't use the parameter in here, but it makes sense to take one
+		// it's private anyway whatever...
 		getStats().incrementKills();
 		playKillSound();
 	}

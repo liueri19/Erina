@@ -8,14 +8,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * The World where Competitors compete in.
  * The Erina is the perfected version of the original beloved and wildly popular Arena.
- * This is the World where Competitors compete in.
- * <pre>
- * The Erina aims to:
- * 	Force the Competitors to comply with requirements on method usage,
- * 	Keep it easy to implement Competitors,
- * 	Resolve the hitter hittee issue that plagued the original Arena.
- * </pre>
  *
  * @version alpha
  * @author Eric

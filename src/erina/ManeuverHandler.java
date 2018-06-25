@@ -29,11 +29,8 @@ final class ManeuverHandler {
 
 			// then handle collision with other competitors
 
-			final List<? extends Competitor> competitors =
-					new LinkedList<>(maneuvers.keySet());
-
-			// update all Competitors' collision states
-			competitors.forEach(Competitor::updateContacts);
+			// update collision states
+			maneuvers.keySet().forEach(Competitor::updateContacts);
 
 			/*
 			The damages from collisions between Competitors is determined by the
@@ -51,30 +48,26 @@ final class ManeuverHandler {
 			Damage is applied to both parties of an impact in a single iteration.
 			 */
 
-			while (!competitors.isEmpty()) {	// no for loop, we'll be removing elements
-				final Competitor comp0 = competitors.remove(0);
-				final List<Competitor> contacts = comp0.getNewContacts();
+			final List<Competitor> contacts = competitor.getNewContacts();
 
-				contacts.forEach(comp1 -> {	// each new contact is a hit
-					competitors.remove(comp1);
+			contacts.forEach(comp1 -> {	// each new contact is a hit
 
-					int damage;
+				int damage;
 
-					// comp0 and comp1 just collided, apply damage
-					// comp0 as hitter
-					damage = (int) Math.round(
-							calculateImpactAngle(comp0, comp1) / Math.PI * Competitor.HIT_DAMAGE
-					);
-					comp1.takeDamageFrom(comp0, damage);
+				// comp0 and comp1 just collided, apply damage
+				// comp0 as hitter
+				damage = (int) Math.round(
+						calculateImpactAngle(competitor, comp1) / Math.PI * Competitor.HIT_DAMAGE
+				);
+				comp1.takeDamageFrom(competitor, damage);
 
 
-					// comp1 as hitter
-					damage = (int) Math.round(
-							calculateImpactAngle(comp1, comp0) / Math.PI * Competitor.HIT_DAMAGE
-					);
-					comp0.takeDamageFrom(comp1, damage);
-				});
-			}
+				// comp1 as hitter
+				damage = (int) Math.round(
+						calculateImpactAngle(comp1, competitor) / Math.PI * Competitor.HIT_DAMAGE
+				);
+				competitor.takeDamageFrom(comp1, damage);
+			});
 
 
 			// handle nuggets
@@ -104,7 +97,7 @@ final class ManeuverHandler {
 		final double Δx = hitter.getX() - hittee.getX();
 		final double Δy = hitter.getY() - hittee.getY();
 		final double θ = Math.atan2(Δy, Δx);
-		return Math.abs(θ - Math.toRadians(hitteeHeading)) % Math.PI;
+		return Math.abs(θ - Math.toRadians(hitteeHeading)) % (2 * Math.PI);
 	}
 
 }

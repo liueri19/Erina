@@ -17,20 +17,23 @@ final class ManeuverHandler {
 	static void handle(Map<? extends Competitor, ? extends Maneuver> maneuvers) {
 		// better algorithm?
 
+		final List<Competitor> competitors = new LinkedList<>(maneuvers.keySet());
+
 		// for each maneuver
-		for (Map.Entry<? extends Competitor, ? extends Maneuver> entry :
-				maneuvers.entrySet()) {
-			final Competitor competitor = entry.getKey();
-			final Maneuver maneuver = entry.getValue();
+		// the ugly mess because we are removing in loop
+		outer: while (!competitors.isEmpty()) {
+
+			final Competitor competitor = competitors.remove(0);
+			final Maneuver maneuver = maneuvers.get(competitor);
 
 			// apply maneuver to the competitor
 			maneuver.applyTo(competitor);
 
-
-			// then handle collision with other competitors
-
 			// update collision states
 			maneuvers.keySet().forEach(Competitor::updateContacts);
+
+			// then handle collision with other competitors
+			// TODO debug collision states
 
 			/*
 			The damages from collisions between Competitors is determined by the
@@ -50,24 +53,44 @@ final class ManeuverHandler {
 
 			final List<Competitor> contacts = competitor.getNewContacts();
 
-			contacts.forEach(comp1 -> {	// each new contact is a hit
+			for (Competitor comp : contacts) {	// each new contact is a hit
 
-				int damage;
+				int damage = 0;
 
-				// comp0 and comp1 just collided, apply damage
-				// comp0 as hitter
+				// just collided, calculate damage
+				// competitor as hitter
+//				try {
+					damage = (int) Math.round(
+							calculateImpactAngle(competitor, comp) / Math.PI * Competitor.HIT_DAMAGE
+					);
+//				}
+//				catch (Exception e) {
+//					e.printStackTrace();
+//					System.out.println(competitor);
+//					System.out.println(comp);
+//				}
+				comp.takeDamageFrom(competitor, damage);
+
+
+				// comp as hitter
 				damage = (int) Math.round(
-						calculateImpactAngle(competitor, comp1) / Math.PI * Competitor.HIT_DAMAGE
+						calculateImpactAngle(comp, competitor) / Math.PI * Competitor.HIT_DAMAGE
 				);
-				comp1.takeDamageFrom(competitor, damage);
+				competitor.takeDamageFrom(comp, damage);
 
 
-				// comp1 as hitter
-				damage = (int) Math.round(
-						calculateImpactAngle(comp1, competitor) / Math.PI * Competitor.HIT_DAMAGE
-				);
-				competitor.takeDamageFrom(comp1, damage);
-			});
+				// check for death
+				// handled here such that death and subsequent removal of Competitor would
+				// not interfere with calculation of damage
+
+				if (comp.checkDeath(competitor))
+					competitors.remove(comp);    // dead, no need to update later
+
+				if (competitor.checkDeath(comp)) {
+					// no remove because competitor is already removed at the beginning
+					continue outer;	// dead, no need to handle nuggets
+				}
+			}
 
 
 			// handle nuggets
@@ -90,14 +113,21 @@ final class ManeuverHandler {
 	 * hitter in radians.
 	 */
 	private static double calculateImpactAngle(Entity<?, ?> hitter, Entity<?, ?> hittee) {
-		// ANGLE = abs(atan(Delta_Y / Delta_X) - HITTEE_HEADING)
+		// TODO use a better source for hitter coordinate?
+		// TODO check edge case, what if hitter coordinate equals hittee coordinate?
 
 		final double hitteeHeading = hittee.getDirection();
 		// so unicode characters are valid identifiers...
 		final double Δx = hitter.getX() - hittee.getX();
 		final double Δy = hitter.getY() - hittee.getY();
-		final double θ = Math.atan2(Δy, Δx);
-		return Math.abs(θ - Math.toRadians(hitteeHeading)) % (2 * Math.PI);
+		final double θ = Math.abs(Math.atan2(Δy, Δx));
+
+		double result = Math.abs(θ - Math.toRadians(hitteeHeading));
+
+		if (result > Math.PI)
+			result = 2 * Math.PI - result;
+
+		return result;
 	}
 
 }

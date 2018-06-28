@@ -271,15 +271,15 @@ public final class Erina extends World {
 	@Override
 	public void act() {
 
-//		if (isFirstAct) {
-//			isFirstAct = false;
-//			tryPlaySounds(startSounds);
-//
-//			while (startSounds.get(startSounds.size()-1).isPlaying())
-//				Greenfoot.delay(30);
-//		}
-//
-//		tryPlaySound(bgm);
+		if (isFirstAct) {
+			isFirstAct = false;
+			tryPlaySounds(startSounds);
+
+			while (startSounds.get(startSounds.size()-1).isPlaying())
+				Greenfoot.delay(30);
+		}
+
+		tryPlaySound(bgm);
 
 		currentCycle++;
 
@@ -395,8 +395,9 @@ public final class Erina extends World {
 	 * @param sound	the sound to play
 	 */
 	public static void tryPlaySound(GreenfootSound sound) {
-		if (sound != null && !sound.isPlaying())
-			sound.play();
+		// TODO uncomment
+//		if (sound != null && !sound.isPlaying())
+//			sound.play();
 	}
 
 	/**
@@ -630,6 +631,8 @@ public final class Erina extends World {
 
 		if (entity instanceof Maneuverable)	// includes null check
 			FETCHER.remove((Maneuverable) entity);
+		if (entity instanceof Competitor)
+			removeObject(((Competitor) entity).getNameTag());
 	}
 
 

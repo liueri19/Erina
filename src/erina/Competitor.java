@@ -206,6 +206,15 @@ public abstract class Competitor
 
 
 	/**
+	 * Checks if this Competitor is still alive. A Competitor is alive as long as it has
+	 * non-negative energy.
+	 * @return true if this Competitor is still alive, false otherwise
+	 */
+	public final boolean isAlive() {
+		return getEnergyLevel() >= 0;
+	}
+
+	/**
 	 * Signals the death of this Competitor. Removes this Competitor from the Erina and
 	 * plays the death sound if defined. This method logs the death message.
 	 * @param attacker the Competitor that killed this Competitor
@@ -217,6 +226,19 @@ public abstract class Competitor
 		playDeathSound();
 
 		Logger.log("Death: %s is killed by %s%n", this, attacker);
+	}
+
+	/**
+	 * Checks if this Competitor is still alive. If dead, this method calls
+	 * {@link Competitor#die(Competitor)}.
+	 * @param attacker the Competitor that killed this Competitor
+	 * @return	true if this Competitor is dead, false otherwise
+	 */
+	final boolean checkDeath(Competitor attacker) {
+		final boolean isDead = !isAlive();
+		if (isDead)
+			die(attacker);
+		return isDead;
 	}
 
 
@@ -247,6 +269,8 @@ public abstract class Competitor
 	 * Updates the contact states of this Competitor.
 	 */
 	final void updateContacts() {
+		if (!isAlive()) return;
+
 		previousContacts.clear();
 		previousContacts.addAll(currentContacts);
 

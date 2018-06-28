@@ -215,8 +215,16 @@ public class Maneuver {
 
 		@Override
 		void applyTo(Competitor competitor) {
-			competitor.changeEnergy(-cost);
-			competitor.getActor().move(distance);
+			final int energyLeft = competitor.getEnergyLevel();
+			int actualCost = cost, actualDistance = distance;
+
+			if (cost > energyLeft) {
+				actualCost = energyLeft;
+				actualDistance = energyLeft;
+			}
+
+			competitor.changeEnergy(-actualCost);
+			competitor.getActor().move(actualDistance);
 		}
 
 		@Override

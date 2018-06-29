@@ -1,6 +1,7 @@
-package erina;
+package erina.core;
 
 import competitors.*;
+import erina.Coordinate;
 import greenfoot.*;
 
 import java.util.*;
@@ -156,8 +157,8 @@ public final class Erina extends World {
 					sauce.setImage("images/LaoGanMa2.png");
 				else
 					sauce.setImage("images/LaoGanMa2.png");
-			}
 
+			}
 			SAUCES = Collections.unmodifiableList(sauces);
 		}
 
@@ -240,8 +241,8 @@ public final class Erina extends World {
 					getCoordinatesFor(competitors.size(), WORLD_WIDTH, WORLD_HEIGHT);
 			// calculated coordinates are centered at the center of the world, need to convert
 			coordinates.replaceAll(c -> new Coordinate(
-					WORLD_WIDTH / 2 + c.x,
-					WORLD_HEIGHT / 2 - c.y
+					WORLD_WIDTH / 2 + c.getX(),
+					WORLD_HEIGHT / 2 - c.getY()
 			));
 
 			for (int i = 0; i < competitors.size(); i++) {
@@ -251,12 +252,12 @@ public final class Erina extends World {
 				// finish init
 				competitor.init(new CompetitorActor(competitor));
 				// add to world
-				addEntity(competitor, coordinate.x, coordinate.y);
+				addEntity(competitor, coordinate.getX(), coordinate.getY());
 				// add NameTags
 				final Coordinate offset = getNameTagOffset(competitor);
 				addObject(competitor.getNameTag(),
-						competitor.getX() + offset.x,
-						competitor.getY() - offset.y
+						competitor.getX() + offset.getX(),
+						competitor.getY() - offset.getY()
 				);
 
 				// submit for updating
@@ -283,55 +284,9 @@ public final class Erina extends World {
 
 		currentCycle++;
 
-		{
-			// add random nugget
-			/*
-			When and how are nuggets added:
-			On each cycle, a number is calculated to represent the probability of a nugget
-			being added. This probability is determined by the number of nuggets already
-			existing in the world and the maximum number of nuggets allowed (MAX_NUGGETS).
-			The probability is 0.01 when the current number of nuggets is 0, is 0 when the
-			current number of nuggets equals to MAX_NUGGETS, and decreases linearly in
-			between.
-			This probability has nothing to do with what type of nugget being added; it
-			represents the likelihood of any nugget being added.
-			If it is determined that a nugget should be added, the specific nugget is selected
-			randomly from a List of Nuggets, then added to a random location. The list is
-			initialized to contain the different types of nuggets at the specified
-			percentages. (10% are 1500, 30% are 1000, 60% are 500)
-			 */
+		tryAddNugget();
 
-			final double PROBABILITY =
-					(MAX_NUGGETS - getObjects(Nugget.class).size()) * 0.01 / MAX_NUGGETS;
-
-			if (Math.random() < PROBABILITY) {	// if add nugget
-				addEntity(
-						NUGGETS.get(Greenfoot.getRandomNumber(NUGGETS.size())),
-						Greenfoot.getRandomNumber(WORLD_WIDTH),
-						Greenfoot.getRandomNumber(WORLD_HEIGHT)
-				);
-			}
-		}
-
-
-		{
-			// add random sauce
-			final double PROBABILITY = 1d / 350;
-			/*
-			In the original, sauce was added every 200 cycles plus a random number from 0
-			to 299, so average to 1 sauce every 350 cycles. This probability should give
-			about the same frequency.
-			 */
-
-			if (Math.random() < PROBABILITY) {
-				addEntity(
-						SAUCES.get(Greenfoot.getRandomNumber(SAUCES.size())),
-						Greenfoot.getRandomNumber(WORLD_WIDTH),
-						Greenfoot.getRandomNumber(WORLD_HEIGHT)
-				);
-			}
-		}
-
+		tryAddSauce();
 
 		{
 			// update stuff
@@ -388,6 +343,57 @@ public final class Erina extends World {
 		}
 	}
 
+	/**
+	 * Attempts to add a random Nugget to the Erina. A Nugget may or may not be added as
+	 * the result.
+	 *
+	 * <p>When and how are nuggets added:
+	 * <p>On each cycle, a number is calculated to represent the probability of a nugget
+	 * being added. This probability is determined by the number of nuggets already
+	 * existing in the world and the maximum number of nuggets allowed (MAX_NUGGETS).
+	 * The probability is 0.01 when the current number of nuggets is 0, is 0 when the
+	 * current number of nuggets equals to MAX_NUGGETS, and decreases linearly in
+	 * between.
+	 * <p>This probability has nothing to do with what type of nugget being added; it
+	 * represents the likelihood of any nugget being added.
+	 * <p>If it is determined that a nugget should be added, the specific nugget is
+	 * selected randomly from a List of Nuggets, then added to a random location. The list
+	 * is initialized to contain the different types of nuggets at the specified
+	 * percentages. (10% are 1500, 30% are 1000, 60% are 500)
+	 */
+	private void tryAddNugget() {
+		final double PROBABILITY =
+				(MAX_NUGGETS - getObjects(Nugget.class).size()) * 0.01 / MAX_NUGGETS;
+
+		if (Math.random() < PROBABILITY) {	// if add nugget
+			addEntity(
+					NUGGETS.get(Greenfoot.getRandomNumber(NUGGETS.size())),
+					Greenfoot.getRandomNumber(WORLD_WIDTH),
+					Greenfoot.getRandomNumber(WORLD_HEIGHT)
+			);
+		}
+	}
+
+	/**
+	 * Attempts to add a random Sauce to the Erina. A Sauce may or may not be added as
+	 * the result.
+	 *
+	 * <p>In the original, sauce was added every 200 cycles plus a random number from 0
+	 * to 299, so average to 1 sauce every 350 cycles. This probability should give
+	 * about the same frequency.
+	 */
+	private void tryAddSauce() {
+		final double PROBABILITY = 1d / 350;
+
+		if (Math.random() < PROBABILITY) {
+			addEntity(
+					SAUCES.get(Greenfoot.getRandomNumber(SAUCES.size())),
+					Greenfoot.getRandomNumber(WORLD_WIDTH),
+					Greenfoot.getRandomNumber(WORLD_HEIGHT)
+			);
+		}
+	}
+
 
 	/**
 	 * Attempts to play the specified sound. Do not play if the sound is null
@@ -424,21 +430,14 @@ public final class Erina extends World {
 	}
 
 
-
-	/** Simple data class representing a Coordinate. */
-	private static class Coordinate {
-		private final int x, y;
-		private Coordinate(int x, int y) { this.x = x; this.y = y; }
-	}
-
 	/**
 	 * Generates the Coordinates for the specified number of competitors in a world of
 	 * specified width and height.
 	 * The generated Coordinates are on a symmetrical shape centered at the center of the
-	 * world. Each Coordinate is defined such that the distance from the Coordinate to the
+	 * world. Each Pair is defined such that the distance from the Pair to the
 	 * origin is 90% of the length of the line segment from the origin to the point of
 	 * intersection formed by the bounds of the world and the line passing through the
-	 * origin and the Coordinate.
+	 * origin and the Pair.
 	 */
 	private static List<Coordinate> getCoordinatesFor(
 			int numEntities,
@@ -487,7 +486,11 @@ public final class Erina extends World {
 	}
 
 
-	private static Coordinate getNameTagOffset(Competitor competitor) {
+	/**
+	 * Calculates the offsets for displaying the NameTag that follows the Competitor.
+	 * @return a Pair for holding the x offset and the y offset
+	 */
+	static Coordinate getNameTagOffset(Competitor competitor) {
 		final GreenfootImage image = competitor.getImage();
 
 		if (image != null) {

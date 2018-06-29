@@ -1,8 +1,8 @@
 package competitors;
 
-import erina.Competitor;
-import erina.Erina;
-import erina.Maneuver;
+import erina.core.Competitor;
+import erina.core.Erina;
+import erina.core.Maneuver;
 import greenfoot.Greenfoot;
 
 /**

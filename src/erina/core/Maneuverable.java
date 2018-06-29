@@ -1,4 +1,4 @@
-package erina;
+package erina.core;
 
 /**
  * A Maneuverable is capable of producing Maneuver objects. This interface has a very

@@ -1,5 +1,6 @@
-package erina;
+package erina.core;
 
+import erina.Coordinate;
 import greenfoot.GreenfootSound;
 
 import java.util.*;
@@ -317,10 +318,14 @@ class CompetitorActor extends EntityActor<Competitor, CompetitorActor> {
 	public void move(int distance) {
 		super.move(distance);
 
-		// make the NameTag follow
+		final Competitor competitor = getEntity();
 		final NameTag nameTag = getEntity().getNameTag();
-		nameTag.setRotation(getRotation());
-		nameTag.move(distance);
-		nameTag.setRotation(0);
+		final Coordinate offset = Erina.getNameTagOffset(competitor);
+
+		// make the NameTag follow
+		nameTag.setLocation(
+				competitor.getX() + offset.getX(),
+				competitor.getY() - offset.getY()
+		);
 	}
 }

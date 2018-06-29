@@ -1,9 +1,9 @@
 package competitors;
 
-import erina.Competitor;
-import erina.Erina;
-import erina.Maneuver;
-import erina.Nugget;
+import erina.core.Competitor;
+import erina.core.Erina;
+import erina.core.Maneuver;
+import erina.core.Nugget;
 import greenfoot.Greenfoot;
 //import greenfoot.GreenfootSound;
 

@@ -1,4 +1,4 @@
-package erina;
+package erina.core;
 
 /**
  * A class that holds some statistics about a Competitor.

@@ -1,4 +1,4 @@
-package erina;
+package erina.core;
 
 import java.util.Map;
 import java.util.Optional;
@@ -103,7 +103,7 @@ final class ManeuverFetcher {
 	}
 
 	/**
-	 * Marks the Maneuverable available for supplying further Maneuvers.
+	 * Marks the Maneuverable ready to be fetched for further Maneuvers.
 	 * @return the next Maneuver supplied by the specified Maneuverable, or null if the
 	 * Maneuverable is not ready or is not being fetched by this ManeuverFetcher.
 	 * @see ManeuverFetcher#get(Maneuverable)

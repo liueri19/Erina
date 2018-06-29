@@ -1,4 +1,4 @@
-package erina;
+package erina.core;
 
 /**
  * A Nugget is an Entity with some energy. Competitors may acquire the energy

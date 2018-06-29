@@ -4,4 +4,4 @@
  * @version alpha
  * @author Eric
  */
-package erina;
+package erina.core;

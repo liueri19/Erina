@@ -1,4 +1,4 @@
-package erina;
+package erina.core;
 
 import java.util.Iterator;
 import java.util.Queue;

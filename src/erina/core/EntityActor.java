@@ -1,4 +1,4 @@
-package erina;
+package erina.core;
 
 import greenfoot.Actor;
 import greenfoot.World;

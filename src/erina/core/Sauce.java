@@ -23,6 +23,14 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 	Sauce(Erina world, int sauceValue) {
 		super(world);
 		this.sauceValue = sauceValue;
+
+		// just in case you find different images for sauces and want to change
+		if (sauceValue == 500)
+			setImage("images/LaoGanMa2.png");
+		else if (sauceValue == 1000)
+			setImage("images/LaoGanMa2.png");
+		else
+			setImage("images/LaoGanMa2.png");
 	}
 
 	/**

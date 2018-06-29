@@ -2,6 +2,7 @@ package erina.core;
 
 import competitors.*;
 import erina.Coordinate;
+import erina.Pair;
 import greenfoot.*;
 
 import java.util.*;
@@ -62,6 +63,12 @@ public final class Erina extends World {
 	/** Maximum number of nuggets allowed to exist simultaneously in the Erina. */
 	public static final int MAX_NUGGETS = 15;
 
+	/** Maximum number of cycles before the competition ends. */
+	public static final int MAX_CYCLES = 10000;
+
+	/** Energy rewarded to surviving Competitors each cycle. */
+	public static final int ENERGY_PER_CYCLE = 1;
+
 	// list of nuggets, instances in this list are reused
 	private final List<Nugget> NUGGETS;
 	// same for sauces
@@ -84,7 +91,12 @@ public final class Erina extends World {
 	// not static because each reset in greenfoot constructs a new Erina
 	private final ManeuverFetcher FETCHER = new ManeuverFetcher();
 
-	private final List<Entity<?, ?>> ENTITIES = new ArrayList<>();
+	/*
+	ENTITIES contain all Entities in the Erina, including Nuggets, Competitors, etc.
+	COMPETITORS only contain Competitors. It is a subset of ENTITIES.
+	 */
+	private final List<Entity<?, ?>> ENTITIES = new LinkedList<>();
+	private final List<Competitor> COMPETITORS = new LinkedList<>();
 
 
 	public Erina() {
@@ -113,18 +125,6 @@ public final class Erina extends World {
 			// init NuggetActors
 			nuggets.forEach(nugget -> nugget.init(new NuggetActor(nugget)));
 
-			for (Nugget nugget : nuggets) {
-				// set appropriate image
-				if (nugget.getNuggetValue() == 500)
-					nugget.setImage("images/nugget_500.png");
-				else if (nugget.getNuggetValue() == 1000)
-					nugget.setImage("images/nugget_1000.png");
-				else if (nugget.getNuggetValue() == 1500)
-					nugget.setImage("images/nugget_1500.png");
-				else
-					throw new IllegalArgumentException("Illegal nugget value: " + nugget.getNuggetValue());
-			}
-
 			NUGGETS = Collections.unmodifiableList(nuggets);
 		}
 
@@ -146,19 +146,6 @@ public final class Erina extends World {
 			// init actors
 			sauces.forEach(sauce -> sauce.init(new SauceActor(sauce)));
 
-			// set images
-			for (Sauce sauce : sauces) {
-				final int sauceValue = sauce.getSauceValue();
-
-				// just in case you find different images for sauces and want to change
-				if (sauceValue == 500)
-					sauce.setImage("images/LaoGanMa2.png");
-				else if (sauceValue == 1000)
-					sauce.setImage("images/LaoGanMa2.png");
-				else
-					sauce.setImage("images/LaoGanMa2.png");
-
-			}
 			SAUCES = Collections.unmodifiableList(sauces);
 		}
 
@@ -172,6 +159,7 @@ public final class Erina extends World {
 			Actor references to Competitors.
 			 */
 
+			// COMPETITORS not used because Erina#addEntity also adds Competitor to COMPETITORS
 			final List<Competitor> competitors = new ArrayList<>();
 
 			// competitors added here, follow this pattern to add/remove competitors
@@ -181,61 +169,6 @@ public final class Erina extends World {
 			competitors.add(new TestCompetitor5(this, "TC_5"));
 			competitors.add(new EvanSchimberg(this, "Evan"));
 			competitors.add(new Jstew(this, "Jstew"));
-
-//			competitors.add(new TestCompetitor6(this, "TC_6"));
-//			competitors.add(new TestCompetitor7(this, "TC_7"));
-
-//			competitors.add(new Competitor(this, "TurnToTester") {
-//				boolean flag;
-//				@Override
-//				public Maneuver doManeuver() {
-//					flag = !flag;
-//					final Maneuver m =
-////							flag ?
-////							new Maneuver(this).turnTowards(0, 0) :
-//							new Maneuver(this).turnTowards(Erina.WORLD_WIDTH, 0);
-//					System.out.println(m);
-//					return m;
-//				}
-//			});
-//			competitors.add(new Competitor(this, "CoordinateTester") {
-//				boolean flag;
-//				@Override
-//				public Maneuver doManeuver() {
-//					System.out.printf("(%d, %d)%n", getX(), getY());
-//					final Maneuver m = new Maneuver(this);
-//					if (!flag) {
-//						m.turn(-90);
-//						flag = true;
-//					}
-//					return m.move(-10);
-//				}
-//			});
-//			competitors.get(0).setImage("images/YellowArrow1.png");
-
-//			competitors.add(new Competitor(this, "CollisionTester0") {
-//				@Override
-//				public Maneuver doManeuver() {
-//					return null;
-//				}
-//			});
-//			competitors.add(new Competitor(this, "CollisionTester1") {
-//				@Override
-//				public Maneuver doManeuver() {
-//					final Maneuver maneuver = new Maneuver(this);
-//
-//					final Competitor target = getObjects(Competitor.class).get(0);
-//					maneuver.turnTowards(target.getX(), target.getY());
-//
-//					if (!getIntersectingObjects(Competitor.class).isEmpty())
-//						maneuver.move(-10);
-//					else
-//						maneuver.move(10);
-//
-//					return maneuver;
-//				}
-//			});
-//			competitors.get(1).setImage("images/YellowArrow1.png");
 
 			final List<Coordinate> coordinates =
 					getCoordinatesFor(competitors.size(), WORLD_WIDTH, WORLD_HEIGHT);
@@ -251,13 +184,13 @@ public final class Erina extends World {
 
 				// finish init
 				competitor.init(new CompetitorActor(competitor));
-				// add to world
+				// add to world, this also adds Competitor to COMPETITORS
 				addEntity(competitor, coordinate.getX(), coordinate.getY());
 				// add NameTags
-				final Coordinate offset = getNameTagOffset(competitor);
+				final Pair<Integer, Integer> offset = getNameTagOffset(competitor);
 				addObject(competitor.getNameTag(),
-						competitor.getX() + offset.getX(),
-						competitor.getY() - offset.getY()
+						competitor.getX() + offset.getKey(),
+						competitor.getY() - offset.getValue()
 				);
 
 				// submit for updating
@@ -282,69 +215,27 @@ public final class Erina extends World {
 
 		tryPlaySound(bgm);
 
-		currentCycle++;
-
 		tryAddNugget();
-
 		tryAddSauce();
 
-		{
-			// update stuff
+		updateManeuvers();
+		updateSauces();
 
-			// collect maneuvers from competitors
-			final Map<Competitor, Maneuver> maneuvers = new HashMap<>();
+		COMPETITORS.forEach(competitor -> competitor.changeEnergy(ENERGY_PER_CYCLE));
 
-			for (Entity<?, ?> entity : ENTITIES) {
-				final Competitor competitor;
 
-				if (entity instanceof Competitor)
-					competitor = (Competitor) entity;
-				else continue;
-
-				final Maneuver maneuver = FETCHER.get(competitor);
-
-				if (maneuver != null)
-					maneuvers.put(competitor, maneuver);
-			}
-
-			// move, handle nuggets
-			ManeuverHandler.handle(maneuvers);
-
-			// fetch next maneuvers
-			ENTITIES.stream()
-					.filter(entity -> entity instanceof Competitor)
-					.map(entity -> (Competitor) entity)
-					.forEach(FETCHER::clear);
-
-			// sauces need to be updated so they are not handled with maneuvers
-			SAUCES.forEach(sauce -> {
-				// if this sauce is in the world
-				if (this.getObjects(Sauce.class).contains(sauce)) {
-					// if contact with competitor, start countdown
-					if (!sauce.getIntersectingObjects(Competitor.class).isEmpty())
-						sauce.startCountdown();
-
-					sauce.updateTimeout();
-
-					if (sauce.hasTimedOut()) {
-						// timed out, give energy to intersecting competitors
-						final List<Competitor> intersectingCompetitors =
-								sauce.getIntersectingObjects(Competitor.class);
-						final int multiplier = intersectingCompetitors.size();
-						intersectingCompetitors.forEach(
-								competitor -> competitor.consume(sauce, multiplier)
-						);
-
-						removeEntity(sauce);
-						sauce.resetTimeout();
-					}
-				}
-			});
+		currentCycle++;
+		if (currentCycle > MAX_CYCLES) {
+			// TODO end Erina
 		}
+
+		if (currentCycle % 500 == 0)	// log cycle milestones
+			Logger.log("Cycle: %d%n", currentCycle);
 	}
 
+
 	/**
-	 * Attempts to add a random Nugget to the Erina. A Nugget may or may not be added as
+	 * Attempts to add a random Nugget to this Erina. A Nugget may or may not be added as
 	 * the result.
 	 *
 	 * <p>When and how are nuggets added:
@@ -375,14 +266,15 @@ public final class Erina extends World {
 	}
 
 	/**
-	 * Attempts to add a random Sauce to the Erina. A Sauce may or may not be added as
+	 * Attempts to add a random Sauce to this Erina. A Sauce may or may not be added as
 	 * the result.
-	 *
-	 * <p>In the original, sauce was added every 200 cycles plus a random number from 0
-	 * to 299, so average to 1 sauce every 350 cycles. This probability should give
-	 * about the same frequency.
 	 */
 	private void tryAddSauce() {
+		/*
+		In the original Arena, sauce was added every 200 cycles plus a random number
+		from 0 to 299, so average to 1 sauce every 350 cycles. This probability should
+		give about the same frequency.
+		 */
 		final double PROBABILITY = 1d / 350;
 
 		if (Math.random() < PROBABILITY) {
@@ -393,6 +285,61 @@ public final class Erina extends World {
 			);
 		}
 	}
+
+
+	/**
+	 * Updates Maneuver related stuff, including Nugget consumptions.
+	 * This method collects and handles maneuvers.
+	 */
+	private void updateManeuvers() {
+		// collect maneuvers from competitors
+		final Map<Competitor, Maneuver> maneuvers = new HashMap<>();
+
+		for (Competitor competitor : COMPETITORS) {
+			final Maneuver maneuver = FETCHER.get(competitor);
+
+			if (maneuver != null)
+				maneuvers.put(competitor, maneuver);
+		}
+
+		// move, handle nuggets
+		ManeuverHandler.handle(maneuvers);
+
+		// fetch next maneuvers
+		COMPETITORS.forEach(FETCHER::clear);
+	}
+
+	/**
+	 * Updates Sauce related stuff.
+	 * Sauce has a timeout, therefore not handled in ManeuverHandler.
+	 */
+	private void updateSauces() {
+		// sauces need to be updated so they are not handled with maneuvers
+		SAUCES.forEach(sauce -> {
+			// if this sauce is in the world
+			if (this.getObjects(Sauce.class).contains(sauce)) {
+				// if contact with competitor, start countdown
+				if (!sauce.getIntersectingObjects(Competitor.class).isEmpty())
+					sauce.startCountdown();
+
+				sauce.updateTimeout();
+
+				if (sauce.hasTimedOut()) {
+					// timed out, give energy to intersecting competitors
+					final List<Competitor> intersectingCompetitors =
+							sauce.getIntersectingObjects(Competitor.class);
+					final int multiplier = intersectingCompetitors.size();
+					intersectingCompetitors.forEach(
+							competitor -> competitor.consume(sauce, multiplier)
+					);
+
+					removeEntity(sauce);
+					sauce.resetTimeout();
+				}
+			}
+		});
+	}
+
 
 
 	/**
@@ -488,16 +435,16 @@ public final class Erina extends World {
 
 	/**
 	 * Calculates the offsets for displaying the NameTag that follows the Competitor.
-	 * @return a Pair for holding the x offset and the y offset
+	 * @return a Pair holding the x and y offsets from the location of the Competitor
 	 */
-	static Coordinate getNameTagOffset(Competitor competitor) {
+	static Pair<Integer, Integer> getNameTagOffset(Competitor competitor) {
 		final GreenfootImage image = competitor.getImage();
 
 		if (image != null) {
-			return new Coordinate(image.getWidth() / 2, image.getHeight() / 2);
+			return new Pair<>(image.getWidth() / 2, image.getHeight() / 2);
 		}
 		else {
-			return new Coordinate(10, 10);
+			return new Pair<>(10, 10);
 		}
 	}
 
@@ -620,6 +567,9 @@ public final class Erina extends World {
 	void addEntity(Entity<?, ?> entity, int x, int y) {
 		ENTITIES.add(entity);
 		addObject(entity.getActor(), x, y);
+
+		if (entity instanceof Competitor)
+			COMPETITORS.add((Competitor) entity);
 	}
 
 
@@ -634,8 +584,12 @@ public final class Erina extends World {
 
 		if (entity instanceof Maneuverable)	// includes null check
 			FETCHER.remove((Maneuverable) entity);
-		if (entity instanceof Competitor)
-			removeObject(((Competitor) entity).getNameTag());
+
+		if (entity instanceof Competitor) {
+			final Competitor competitor = (Competitor) entity;
+			COMPETITORS.remove(competitor);
+			removeObject(competitor.getNameTag());
+		}
 	}
 
 

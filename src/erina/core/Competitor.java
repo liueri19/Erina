@@ -1,6 +1,6 @@
 package erina.core;
 
-import erina.Coordinate;
+import erina.Pair;
 import greenfoot.GreenfootSound;
 
 import java.util.*;
@@ -31,7 +31,7 @@ public abstract class Competitor
 	/** Amount of energy this competitor has. */
 	private int energyLevel = INITIAL_ENERGY_LEVEL;
 
-	private CompetitorStats stats;
+	private final CompetitorStats stats;
 
 	private final NameTag nameTag;
 
@@ -43,15 +43,6 @@ public abstract class Competitor
 	public final CompetitorStats getStats() {
 		return stats;
 	}
-
-	// CompetitorStats mutable, no need for this
-//	/**
-//	 * Updates the statistics of this Competitor to the specified values.
-//	 * @see	CompetitorStats
-//	 */
-//	final void updateStats(CompetitorStats stats) {
-//		this.stats = stats;
-//	}
 
 
 	/**
@@ -209,10 +200,10 @@ public abstract class Competitor
 	/**
 	 * Checks if this Competitor is still alive. A Competitor is alive as long as it has
 	 * non-negative energy.
-	 * @return true if this Competitor is still alive, false otherwise
+	 * @return true if this Competitor is dead, false otherwise
 	 */
-	public final boolean isAlive() {
-		return getEnergyLevel() >= 0;
+	public final boolean isDead() {
+		return getEnergyLevel() < 0;
 	}
 
 	/**
@@ -236,7 +227,7 @@ public abstract class Competitor
 	 * @return	true if this Competitor is dead, false otherwise
 	 */
 	final boolean checkDeath(Competitor attacker) {
-		final boolean isDead = !isAlive();
+		final boolean isDead = isDead();
 		if (isDead)
 			die(attacker);
 		return isDead;
@@ -270,7 +261,7 @@ public abstract class Competitor
 	 * Updates the contact states of this Competitor.
 	 */
 	final void updateContacts() {
-		if (!isAlive()) return;
+		if (isDead()) return;
 
 		previousContacts.clear();
 		previousContacts.addAll(currentContacts);
@@ -320,12 +311,12 @@ class CompetitorActor extends EntityActor<Competitor, CompetitorActor> {
 
 		final Competitor competitor = getEntity();
 		final NameTag nameTag = getEntity().getNameTag();
-		final Coordinate offset = Erina.getNameTagOffset(competitor);
+		final Pair<Integer, Integer> offset = Erina.getNameTagOffset(competitor);
 
 		// make the NameTag follow
 		nameTag.setLocation(
-				competitor.getX() + offset.getX(),
-				competitor.getY() - offset.getY()
+				competitor.getX() + offset.getKey(),
+				competitor.getY() - offset.getValue()
 		);
 	}
 }

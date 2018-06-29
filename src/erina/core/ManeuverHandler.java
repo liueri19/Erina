@@ -55,7 +55,7 @@ final class ManeuverHandler {
 
 			for (Competitor comp : contacts) {	// each new contact is a hit
 
-				int damage = 0;
+				int damage;
 
 				// just collided, calculate damage
 				// competitor as hitter

@@ -13,6 +13,16 @@ public final class Nugget extends Entity<Nugget, NuggetActor> {
 	Nugget(Erina world, int value) {
 		super(world);
 		nuggetValue = value;
+
+		// set appropriate image
+		if (nuggetValue == 500)
+			setImage("images/nugget_500.png");
+		else if (nuggetValue == 1000)
+			setImage("images/nugget_1000.png");
+		else if (nuggetValue == 1500)
+			setImage("images/nugget_1500.png");
+		else
+			throw new IllegalArgumentException("Illegal nugget value: " + nuggetValue);
 	}
 
 	/**

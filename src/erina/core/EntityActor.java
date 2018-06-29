@@ -14,7 +14,7 @@ import java.util.List;
 abstract class EntityActor<E extends Entity<E, A>, A extends EntityActor<E, A>>
 		extends Actor {
 
-	private E entity;
+	private final E entity;
 
 	EntityActor(E entity) {
 		this.entity = entity;

@@ -1,0 +1,26 @@
+Erina is the new ArnoldArena.
+The Erina is build with the following goals in mind:
+
+1. Rely as little as possible on the compliance of clients (implementers of Competitors). Instead it should enforce the requirements such that non-compliant Competitors do not compile or fail at runtime. Specifically, the Erina should not allow Competitors to call illegal greenfoot methods (move and set location methods, add and remove methods, etc.).
+2. Properly resolve hitter/hittee relationship.
+3. Each Competitor should be handled by a different thread. Competitors may employ expensive algorithm at the expense of lower execution rate. A Competitor that takes longer to produce the next Maneuver moves less frequently.
+4. Reimplement most, if not all, existing features in the ArnoldArena.
+5. Minimize effort needed to migrate existing Competitor classes.
+6. In achieving the previous goals, the Erina should not complicate the implementation of Competitors.
+
+Entity class is added to help limit Competitor class's access to illegal methods. All directed subclasses of Entity class must have a companion class that extends EntityActor. For examples, see Competitor-CompetitorActor, Nugget-NuggetActor, and Sauce-SauceActor.
+See Erina for examples of proper Entity initialization.
+
+The Competitor class is a subclass of Entity.
+Competitor class no longer contains essential methods. Maneuvering is done by constructing Maneuver objects. Maneuver objects describes a set of actions the Competitor wishes to take.
+The statistics that used to be stored in Competitor class is now in CompetitorStats.
+
+The Maneuverable interface defines the doManeuver() method. This method does not change the location of the Competitor, instead it produces Maneuver objects. This method is to be overridden in subclasses of Competitor.
+
+The ManeuverFetcher invokes the doManeuver() method, fetching the Maneuvers from Maneuverables.
+
+The ManeuverHandler carries out the Maneuvers fetched by ManeuverFetcher. It also handles any collisions resulted from the Maneuvers.
+
+The NameTag is a small label following the Competitor in the Erina. It only displays the name of the Competitor and does not interfere with the game.
+
+The Pair and Coordinate classes were originally private nested classes for easier handling of paired values. It is later decided to add to the public API as an utility class.

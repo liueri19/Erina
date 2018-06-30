@@ -8,6 +8,7 @@ package erina.core;
  */
 public final class CompetitorStats {
 
+	private final Competitor owner;
 	private volatile Competitor lastAttacker, lastVictim;
 	private volatile int kills, totalDistance, cycles, score, nuggetsCount, nuggetsValue,
 			saucesCount, saucesValue, hitsInflicted, hitsAbsorbed;
@@ -16,8 +17,9 @@ public final class CompetitorStats {
 	/**
 	 * Creates a new CompetitorStats with all values null or 0.
 	 */
-	CompetitorStats() {
-		this(null, null,
+	CompetitorStats(Competitor owner) {
+		this(owner,
+				null, null,
 				0,
 				0,
 				0,
@@ -33,7 +35,8 @@ public final class CompetitorStats {
 	 * prone.
 	 */
 	@Deprecated
-	CompetitorStats(Competitor lastAttacker, Competitor lastVictim,
+	CompetitorStats(Competitor owner,
+					Competitor lastAttacker, Competitor lastVictim,
 					int kills,
 					int totalDistance,
 					int cycles,
@@ -41,6 +44,7 @@ public final class CompetitorStats {
 					int nuggetsCount, int nuggetsValue,
 					int saucesCount, int saucesValue,
 					int hitsInflicted, int hitsAbsorbed) {
+		this.owner = owner;
 		this.lastAttacker = lastAttacker;
 		this.lastVictim = lastVictim;
 		this.kills = kills;
@@ -60,6 +64,7 @@ public final class CompetitorStats {
 	 * Creates a CompetitorStats by copying values from the specified object.
 	 */
 	CompetitorStats(CompetitorStats stats) {
+		owner = stats.getOwner();
 		lastAttacker = stats.getLastAttacker();
 		lastVictim = stats.getLastVictim();
 		kills = stats.getKills();
@@ -75,6 +80,10 @@ public final class CompetitorStats {
 	}
 
 
+	/**
+	 * Returns the Competitor associated with this CompetitorStats object.
+	 */
+	public Competitor getOwner() { return owner; }
 
 	/**
 	 * Returns the last Competitor that inflicted damage on this Competitor.
@@ -112,9 +121,10 @@ public final class CompetitorStats {
 	public int getCyclesSurvived() { return cycles; }
 
 	/**
-	 * Returns the current score of this Competitor.
+	 * Returns the score of this Competitor.
+	 * Note that scores are not updated until the end of game.
 	 */
-	public int getScore() { return score; }
+	int getScore() { return score; }
 
 	/**
 	 * Returns the number of Nuggets this Competitor has consumed.
@@ -160,17 +170,15 @@ public final class CompetitorStats {
 		totalDistance += increment;
 	}
 
-	void setCycles(int cycles) {
+	void setCyclesSurvived(int cycles) {
 		this.cycles = cycles;
 	}
 
-	synchronized void incrementCycles() { cycles++; }
+	synchronized void incrementCyclesSurvived() { cycles++; }
 
 	void setScore(int score) {
 		this.score = score;
 	}
-
-	synchronized void incrementScoreBy(int amount) { score += amount; }
 
 
 	/**
@@ -233,4 +241,38 @@ public final class CompetitorStats {
 	}
 
 	synchronized void incrementHitsAbsorbed() { hitsAbsorbed++; }
+
+
+	/**
+	 * Calculates a score based on the statistics stored in this CompetitorStats object.
+	 */
+	int calculateScore() {
+		// TODO implement scoring
+		setScore(0);
+		return score;
+	}
+
+
+	@Override
+	public String toString() {
+		final int energy = getOwner().getEnergyLevel();
+		final boolean contact;
+		final int x, y;
+
+		if (getOwner().isDead()) {
+			contact = false;
+			x = -1;
+			y = -1;
+		}
+		else {
+			contact = getOwner().isTouching(Competitor.class);
+			x = getOwner().getX();
+			y = getOwner().getY();
+		}
+
+		return String.format(
+				"Competitor:%15s, Energy:%6d, Kills:%3d, HitsInflicted:%5d, CurrentContact:%-3s, X:%3d, Y:%3d",
+				getOwner(), energy, getKills(), getHitsInflicted(), getHitsAbsorbed(), contact, x, y
+		);
+	}
 }

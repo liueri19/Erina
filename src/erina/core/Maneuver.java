@@ -224,6 +224,7 @@ public class Maneuver {
 			}
 
 			competitor.changeEnergy(-actualCost);
+			competitor.getStats().incrementTotalDistanceBy(actualDistance);
 			competitor.getActor().move(actualDistance);
 		}
 

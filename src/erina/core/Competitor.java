@@ -52,7 +52,7 @@ public abstract class Competitor
 	 */
 	public Competitor(Erina world, String name) {
 		super(world);
-		stats = new CompetitorStats();
+		stats = new CompetitorStats(this);
 		this.name = name;
 		nameTag = new NameTag(name);
 	}
@@ -144,7 +144,7 @@ public abstract class Competitor
 		getStats().incrementNuggets(nugget);
 		playSadisticSound();
 
-		Logger.log("Nugget Consumption: %s consumed %s%n",
+		Logger.logLine("Nugget Consumption: %s consumed %s",
 				this, nugget);
 	}
 
@@ -160,7 +160,7 @@ public abstract class Competitor
 		getStats().incrementSauces(sauce, multiplier);
 		playSadisticSound();
 
-		Logger.log("Sauce Consumption: %s consumed %s with multiplier of %d%n",
+		Logger.logLine("Sauce Consumption: %s consumed %s with multiplier of %d",
 				this, sauce, multiplier);
 	}
 
@@ -180,7 +180,7 @@ public abstract class Competitor
 		getStats().setLastAttacker(attacker);
 		playHorrorSound();
 
-		Logger.log("Collision: %s took %d damage from %s%n",
+		Logger.logLine("Collision: %s took %d damage from %s",
 				this, damage, attacker);
 	}
 
@@ -217,7 +217,7 @@ public abstract class Competitor
 		attacker.kill(this);
 		playDeathSound();
 
-		Logger.log("Death: %s is killed by %s%n", this, attacker);
+		Logger.logLine("Death: %s is killed by %s", this, attacker);
 	}
 
 	/**

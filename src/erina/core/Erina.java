@@ -75,14 +75,18 @@ public final class Erina extends World {
 	private final List<Sauce> SAUCES;
 
 	// the BGM played through out the game
-	private final String bgmFilename = "sounds/17 Disc Wars 1.wav";
-	private final GreenfootSound bgm = new GreenfootSound(bgmFilename);
+	private final String BGM_FILE = "sounds/17 Disc Wars 1.wav";
+	private final GreenfootSound BGM = new GreenfootSound(BGM_FILE);
 
 	// the sounds made only once at the start
-	private final List<GreenfootSound> startSounds = initSounds(
+	private final List<GreenfootSound> START_SOUNDS = initSounds(
 			"sounds/WHOOSH_Camera_Flash.wav",
 			"sounds/It's time to Duel [HQ] - YouTube.mp3"
 	);
+
+	// the sound played at the end of game
+	private final String EOG_SOUND_FILE = "sounds/RISE-SHORT_Snap.wav";
+	private final GreenfootSound EOG_SOUND = new GreenfootSound(EOG_SOUND_FILE);
 
 	private boolean isFirstAct = true;
 
@@ -96,7 +100,9 @@ public final class Erina extends World {
 	COMPETITORS only contain Competitors. It is a subset of ENTITIES.
 	 */
 	private final List<Entity<?, ?>> ENTITIES = new LinkedList<>();
+
 	private final List<Competitor> COMPETITORS = new LinkedList<>();
+	private final List<Competitor> DECEASED_COMPS = new LinkedList<>();
 
 
 	public Erina() {
@@ -207,13 +213,13 @@ public final class Erina extends World {
 
 		if (isFirstAct) {
 			isFirstAct = false;
-			tryPlaySounds(startSounds);
+			tryPlaySounds(START_SOUNDS);
 
-			while (startSounds.get(startSounds.size()-1).isPlaying())
+			while (START_SOUNDS.get(START_SOUNDS.size()-1).isPlaying())
 				Greenfoot.delay(30);
 		}
 
-		tryPlaySound(bgm);
+		tryPlaySound(BGM);
 
 		tryAddNugget();
 		tryAddSauce();
@@ -221,16 +227,47 @@ public final class Erina extends World {
 		updateManeuvers();
 		updateSauces();
 
-		COMPETITORS.forEach(competitor -> competitor.changeEnergy(ENERGY_PER_CYCLE));
+		COMPETITORS.forEach(competitor -> {
+			competitor.changeEnergy(ENERGY_PER_CYCLE);
+			competitor.getStats().incrementCyclesSurvived();
+		});
 
 
 		currentCycle++;
-		if (currentCycle > MAX_CYCLES) {
-			// TODO end Erina
+
+		// if game ended
+		if (COMPETITORS.size() < 2 || currentCycle >= MAX_CYCLES) {
+			FETCHER.shutdown();
+
+			logGameEnded();
+
+			// play end of game sound
+			tryPlaySound(EOG_SOUND);
+			Greenfoot.delay(1000);	// not sure what's this for but it's in the original
+
+			final List<Competitor> ALL_COMPS = new ArrayList<>(COMPETITORS);
+			ALL_COMPS.addAll(DECEASED_COMPS);
+
+			// calculate scores
+			// I don't see why we should calculate scores differently for alive and dead
+			// competitors...
+			ALL_COMPS.forEach(competitor -> competitor.getStats().calculateScore());
+
+			// rank Competitors
+			final Comparator<Competitor> compareByScore =
+					Comparator.comparingInt(comp -> comp.getStats().getScore());
+			ALL_COMPS.sort(compareByScore.reversed());	// reversed for highest to lowest
+
+
+			// display score board
+			addObject(
+					new ScoreBoard(1000, 700, ALL_COMPS),
+					WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
 		}
 
-		if (currentCycle % 500 == 0)	// log cycle milestones
-			Logger.log("Cycle: %d%n", currentCycle);
+
+		else if (currentCycle % 500 == 0)	// log cycle milestones
+			Logger.logLine("Cycle: %d", currentCycle);
 	}
 
 
@@ -450,6 +487,33 @@ public final class Erina extends World {
 
 
 	/**
+	 * Log some information about the end of the game.
+	 */
+	private void logGameEnded() {
+		// game ended
+		Logger.logLine("********** Game Ended! **********");
+		Logger.logLine("Cycle: %d", currentCycle);
+
+		Logger.logLine();
+
+		// show Competitors left
+		Logger.logLine("%d Competitors left in play...", COMPETITORS.size());
+		COMPETITORS.forEach(competitor ->
+				Logger.logLine(competitor.getStats().toString()));
+
+		Logger.logLine();
+
+		// show dead Competitors
+		Logger.logLine("%d Competitors were killed in the Erina...", DECEASED_COMPS.size());
+		DECEASED_COMPS.forEach(competitor -> {
+			final CompetitorStats stats = competitor.getStats();
+			Logger.log(stats.toString());
+			Logger.logLine(", KilledBy:%15s", stats.getLastAttacker());
+		});
+	}
+
+
+	/**
 	 * Gets the number of times the {@link Erina#act()} method was run.
 	 */
 	public final long getCurrentCycle() { return currentCycle; }
@@ -587,7 +651,7 @@ public final class Erina extends World {
 
 		if (entity instanceof Competitor) {
 			final Competitor competitor = (Competitor) entity;
-			COMPETITORS.remove(competitor);
+			COMPETITORS.remove(competitor); DECEASED_COMPS.add(competitor);
 			removeObject(competitor.getNameTag());
 		}
 	}

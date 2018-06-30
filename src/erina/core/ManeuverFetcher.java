@@ -34,14 +34,14 @@ final class ManeuverFetcher {
 
 	/**
 	 * Causes this ManeuverFetcher to start fetching.
-	 * @see	ManeuverFetcher#terminate()
+	 * @see	ManeuverFetcher#shutdown()
 	 */
 	void start() {
 		// if we are not already running and we are not already shutdown
 		if (!running && !executor.isShutdown()) {
 			running = true;	// start running
 			executor.submit(() -> {	// do the following on a different thread
-				// run until terminate
+				// run until shutdown
 				while (running) {
 
 					// for each entry
@@ -74,13 +74,14 @@ final class ManeuverFetcher {
 	}
 
 	/**
-	 * Causes this ManeuverFetcher to terminate. No more Maneuvers will be fetched and all
+	 * Causes this ManeuverFetcher to shutdown. No more Maneuvers will be fetched and all
 	 * threads will be shutdown.
 	 * @see	ManeuverFetcher#start()
 	 */
-	void terminate() {
+	void shutdown() {
 		running = false;
 		executor.shutdown();
+		fetchers.shutdown();
 	}
 
 

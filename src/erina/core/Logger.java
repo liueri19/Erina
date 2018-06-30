@@ -37,7 +37,28 @@ class Logger {
 	 */
 	static void log(String message, Object... args) {
 		message = String.format(message, args);
+		tryWrite(message);
+	}
 
+	/**
+	 * Logs a message like printf followed by a line separator.
+	 */
+	static void logLine(String message, Object... args) {
+		log(message + "%n", args);
+	}
+
+	/**
+	 * Produces an empty line in the log.
+	 */
+	static void logLine() {
+		logLine("");
+	}
+
+
+	/**
+	 * Writes and flushes without throwing checked exceptions.
+	 */
+	private static void tryWrite(String message) {
 		try {
 			OUTPUT.write(message);
 			OUTPUT.flush();

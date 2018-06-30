@@ -241,7 +241,7 @@ public final class CompetitorStats {
 
 	synchronized void incrementSaucesCount() { saucesCount++; }
 
-	public void setSaucesValue(int saucesValue) {
+	void setSaucesValue(int saucesValue) {
 		this.saucesValue = saucesValue;
 	}
 

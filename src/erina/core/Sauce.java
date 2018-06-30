@@ -43,6 +43,10 @@ public final class Sauce extends Entity<Sauce, SauceActor> {
 	 */
 	public int getIterationsLeft() { return iterationsLeft; }
 
+	/**
+	 * Checks if this Sauce has timed out.
+	 * @return true if this sauce has timed out, false otherwise
+	 */
 	public boolean hasTimedOut() { return iterationsLeft <= 0; }
 
 	void startCountdown() {

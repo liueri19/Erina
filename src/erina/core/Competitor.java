@@ -18,8 +18,10 @@ public abstract class Competitor
 		extends Entity<Competitor, CompetitorActor>
 		implements Maneuverable {
 
-	/** The amount of damage each collision deals. */
-	public static final int MIN_DAMAGE = 1, MAX_DAMAGE = 6;
+	/** The minimum amount of damage each collision deals. */
+	public static final int MIN_DAMAGE = 1;
+	/** The maximum amount of damage each collision deals. */
+	public static final int MAX_DAMAGE = 6;
 
 	private GreenfootSound killSound, deathSound, horrorSound, sadisticSound;
 

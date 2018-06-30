@@ -23,6 +23,7 @@ import java.util.List;
  * @version 1.0
  * <p>
  * Modified 5/2016 by Brian Arnold for ArnoldArena project
+ * <p>
  * Modified 2018-06 by Eric for Erina project
  */
 class ScoreBoard extends Actor {

@@ -33,7 +33,6 @@ final class ManeuverHandler {
 			maneuvers.keySet().forEach(Competitor::updateContacts);
 
 			// then handle collision with other competitors
-			// TODO debug collision states
 
 			/*
 			The damages from collisions between Competitors is determined by the
@@ -43,11 +42,11 @@ final class ManeuverHandler {
 			hit is on the back of the competitor), full damage is dealt on the
 			competitor. The amount of damage taken at any given angle is defined
 			as:
-			DAMAGE = abs(ANGLE) / PI * HIT_DAMAGE
+			DAMAGE = abs(ANGLE) / PI * MAX_DAMAGE
 			Where DAMAGE is the damage on the competitor taking the hit, ANGLE is
 			the angle between the heading of the competitor and the ray extending
 			from the center of the competitor to the center of the hitter in
-			radians, HIT_DAMAGE is the maximum damage.
+			radians, MAX_DAMAGE is the maximum damage.
 			Damage is applied to both parties of an impact in a single iteration.
 			 */
 
@@ -59,22 +58,19 @@ final class ManeuverHandler {
 
 				// just collided, calculate damage
 				// competitor as hitter
-//				try {
-					damage = (int) Math.round(
-							calculateImpactAngle(competitor, comp) / Math.PI * Competitor.HIT_DAMAGE
-					);
-//				}
-//				catch (Exception e) {
-//					e.printStackTrace();
-//					System.out.println(competitor);
-//					System.out.println(comp);
-//				}
+				damage = (int) Math.round(
+						calculateImpactAngle(competitor, comp) / Math.PI	// multiplier
+								* (Competitor.MAX_DAMAGE - Competitor.MIN_DAMAGE)	// range
+								+ Competitor.MIN_DAMAGE
+				);
 				comp.takeDamageFrom(competitor, damage);
 
 
 				// comp as hitter
 				damage = (int) Math.round(
-						calculateImpactAngle(comp, competitor) / Math.PI * Competitor.HIT_DAMAGE
+						calculateImpactAngle(comp, competitor) / Math.PI	// multiplier
+								* (Competitor.MAX_DAMAGE - Competitor.MIN_DAMAGE)	// range
+								+ Competitor.MIN_DAMAGE
 				);
 				competitor.takeDamageFrom(comp, damage);
 

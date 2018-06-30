@@ -11,7 +11,8 @@ public final class CompetitorStats {
 	private final Competitor owner;
 	private volatile Competitor lastAttacker, lastVictim;
 	private volatile int kills, totalDistance, cycles, score, nuggetsCount, nuggetsValue,
-			saucesCount, saucesValue, hitsInflicted, hitsAbsorbed;
+			saucesCount, saucesValue, hitsInflicted, hitsAbsorbed, damageInflicted,
+			damageAbsorbed;
 
 
 	/**
@@ -26,7 +27,8 @@ public final class CompetitorStats {
 				0,
 				0, 0,
 				0, 0,
-				0, 0);
+				0, 0,
+				0 , 0);
 	}
 
 	/**
@@ -43,7 +45,8 @@ public final class CompetitorStats {
 					int score,
 					int nuggetsCount, int nuggetsValue,
 					int saucesCount, int saucesValue,
-					int hitsInflicted, int hitsAbsorbed) {
+					int hitsInflicted, int hitsAbsorbed,
+					int damageInflicted, int damageAbsorbed) {
 		this.owner = owner;
 		this.lastAttacker = lastAttacker;
 		this.lastVictim = lastVictim;
@@ -57,6 +60,8 @@ public final class CompetitorStats {
 		this.saucesValue = saucesValue;
 		this.hitsInflicted = hitsInflicted;
 		this.hitsAbsorbed = hitsAbsorbed;
+		this.damageInflicted = damageInflicted;
+		this.damageAbsorbed = damageAbsorbed;
 	}
 
 
@@ -77,6 +82,8 @@ public final class CompetitorStats {
 		saucesValue = stats.getSaucesValue();
 		hitsInflicted = stats.getHitsInflicted();
 		hitsAbsorbed = stats.getHitsAbsorbed();
+		damageInflicted = stats.getDamageInflicted();
+		damageAbsorbed = stats.getDamageAbsorbed();
 	}
 
 
@@ -104,6 +111,16 @@ public final class CompetitorStats {
 	 * Returns the number of hits this Competitor has absorbed.
 	 */
 	public int getHitsAbsorbed() { return hitsAbsorbed; }
+
+	/**
+	 * Returns the amount of damage this Competitor has inflicted on others.
+	 */
+	public int getDamageInflicted() { return damageInflicted; }
+
+	/**
+	 * Returns the amount of damage this Competitor has absorbed from others.
+	 */
+	public int getDamageAbsorbed() { return damageAbsorbed; }
 
 	/**
 	 * Returns the number of kills this Competitor completed.
@@ -242,13 +259,39 @@ public final class CompetitorStats {
 
 	synchronized void incrementHitsAbsorbed() { hitsAbsorbed++; }
 
+	void setDamageInflicted(int damageInflicted) {
+		this.damageInflicted = damageInflicted;
+	}
+
+	synchronized void incrementDamageInflictedBy(int amount) {
+		 damageInflicted += amount;
+	}
+
+	void setDamageAbsorbed(int damageAbsorbed) {
+		this.damageAbsorbed = damageAbsorbed;
+	}
+
+	synchronized void incrementDamageAbsorbedBy(int amount) {
+		damageAbsorbed += amount;
+	}
 
 	/**
 	 * Calculates a score based on the statistics stored in this CompetitorStats object.
+	 * This method also updates the score stored in this object.
 	 */
 	int calculateScore() {
-		// TODO implement scoring
-		setScore(0);
+		int score = 0;
+
+		score += getOwner().getEnergyLevel();
+		score += getKills() * 500;
+		score += getDamageInflicted() * 5;	// hits inflicted/absorbed are always equal
+		score -= getDamageAbsorbed() * 5;	// using hits would cancel each other
+		score += getTotalDistance() / 2;
+		score += getCyclesSurvived();
+		score += getNuggetsCount() * 50;
+		score += getNuggetsValue();
+
+		setScore(score);
 		return score;
 	}
 
@@ -256,23 +299,23 @@ public final class CompetitorStats {
 	@Override
 	public String toString() {
 		final int energy = getOwner().getEnergyLevel();
-		final boolean contact;
+//		final boolean contact;
 		final int x, y;
 
 		if (getOwner().isDead()) {
-			contact = false;
+//			contact = false;
 			x = -1;
 			y = -1;
 		}
 		else {
-			contact = getOwner().isTouching(Competitor.class);
+//			contact = getOwner().isTouching(Competitor.class);
 			x = getOwner().getX();
 			y = getOwner().getY();
 		}
 
 		return String.format(
-				"Competitor:%15s, Energy:%6d, Kills:%3d, HitsInflicted:%5d, CurrentContact:%-3s, X:%3d, Y:%3d",
-				getOwner(), energy, getKills(), getHitsInflicted(), getHitsAbsorbed(), contact, x, y
+				"Competitor:%15s, Energy:%6d, Kills:%3d, HitsInflicted:%5d, DamageInflicted:%6d, DamageAbsorbed:%6d, X:%3d, Y:%3d",
+				getOwner(), energy, getKills(), getHitsInflicted(), getDamageInflicted(), getDamageAbsorbed(), x, y
 		);
 	}
 }

@@ -19,7 +19,7 @@ public abstract class Competitor
 		implements Maneuverable {
 
 	/** The amount of damage each collision deals. */
-	public static final int HIT_DAMAGE = 5;
+	public static final int MIN_DAMAGE = 1, MAX_DAMAGE = 6;
 
 	private GreenfootSound killSound, deathSound, horrorSound, sadisticSound;
 
@@ -144,8 +144,8 @@ public abstract class Competitor
 		getStats().incrementNuggets(nugget);
 		playSadisticSound();
 
-		Logger.logLine("Nugget Consumption: %s consumed %s",
-				this, nugget);
+		Logger.logLine("[%5d] Nugget Consumption: %15s consumed %15s",
+				getWorld().getCurrentCycle(), this, nugget);
 	}
 
 	/**
@@ -160,8 +160,8 @@ public abstract class Competitor
 		getStats().incrementSauces(sauce, multiplier);
 		playSadisticSound();
 
-		Logger.logLine("Sauce Consumption: %s consumed %s with multiplier of %d",
-				this, sauce, multiplier);
+		Logger.logLine("[%5d] Sauce Consumption: %15s consumed %15s with multiplier of %3d",
+				getWorld().getCurrentCycle(), this, sauce, multiplier);
 	}
 
 
@@ -169,19 +169,20 @@ public abstract class Competitor
 	 * Apply the specified amount of damage on this Competitor. Plays the horror sound if
 	 * defined.
 	 * @param attacker the Competitor that inflicted damage on this Competitor
-	 * @see	Competitor#inflictDamageOn(Competitor)
+	 * @see	Competitor#inflictDamageOn(Competitor, int)
 	 */
 	final void takeDamageFrom(Competitor attacker, int damage) {
 		if (damage < 0) throw new IllegalArgumentException("damage cannot be negative");
 
 		changeEnergy(-damage);
-		attacker.inflictDamageOn(this);
+		attacker.inflictDamageOn(this, damage);
 		getStats().incrementHitsAbsorbed();
+		getStats().incrementDamageAbsorbedBy(damage);
 		getStats().setLastAttacker(attacker);
 		playHorrorSound();
 
-		Logger.logLine("Collision: %s took %d damage from %s",
-				this, damage, attacker);
+		Logger.logLine("[%5d] Collision: %15s took %d damage from %15s",
+				getWorld().getCurrentCycle(), this, damage, attacker);
 	}
 
 
@@ -191,8 +192,9 @@ public abstract class Competitor
 	 * {@link Competitor#takeDamageFrom(Competitor, int)}.
 	 * @see	Competitor#takeDamageFrom(Competitor, int)
 	 */
-	private void inflictDamageOn(Competitor target) {
+	private void inflictDamageOn(Competitor target, int damage) {
 		getStats().incrementHitsInflicted();
+		getStats().incrementDamageInflictedBy(damage);
 		getStats().setLastVictim(target);
 	}
 
@@ -217,7 +219,8 @@ public abstract class Competitor
 		attacker.kill(this);
 		playDeathSound();
 
-		Logger.logLine("Death: %s is killed by %s", this, attacker);
+		Logger.logLine("[%5d] Death: %15s is killed by %15s",
+				getWorld().getCurrentCycle(), this, attacker);
 	}
 
 	/**

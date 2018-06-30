@@ -85,6 +85,7 @@ class ScoreBoard extends Actor {
 		drawString("Hits", x, topSpace - HEADER_TEXT_HEIGHT - 5, MAIN_COLOR, HEADER_TEXT_HEIGHT);
 //		x += 65;
 //		drawString("Hits Taken", x, topSpace - HEADER_TEXT_HEIGHT - 5, MAIN_COLOR, HEADER_TEXT_HEIGHT);
+		// TODO add damage info?
 		x += 110;
 		drawString("Distance", x, topSpace - HEADER_TEXT_HEIGHT - 5, MAIN_COLOR, HEADER_TEXT_HEIGHT);
 		x += 100;
@@ -137,6 +138,7 @@ class ScoreBoard extends Actor {
 			drawString("" + stats.getHitsInflicted(), x, y + 18, SCORE_COLOR, PLAYER_TEXT_HEIGHT);
 //			x += 75;
 //			drawString("" + stats.getHitsAbsorbed(), x, y + 18, SCORE_COLOR, PLAYER_TEXT_HEIGHT);
+			// TODO add damage info?
 			x += 95;
 			drawString("" + stats.getTotalDistance(), x, y + 18, SCORE_COLOR, PLAYER_TEXT_HEIGHT);
 			x += 100;

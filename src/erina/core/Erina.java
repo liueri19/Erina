@@ -238,6 +238,7 @@ public final class Erina extends World {
 		// if game ended
 		if (COMPETITORS.size() < 2 || currentCycle >= MAX_CYCLES) {
 			FETCHER.shutdown();
+			Greenfoot.stop();
 
 			logGameEnded();
 

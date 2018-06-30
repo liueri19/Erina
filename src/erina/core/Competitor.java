@@ -11,7 +11,7 @@ import java.util.*;
  * <p>Subclasses of Competitors should not need to know about Actors. Competitors have a
  * higher level of abstraction.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 public abstract class Competitor

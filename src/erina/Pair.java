@@ -3,7 +3,7 @@ package erina;
 /**
  * Simple immutable data class representing a pair of values.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 public class Pair<K, V> {

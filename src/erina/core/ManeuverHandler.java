@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * This class handles Maneuvers supplied by Competitors.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 final class ManeuverHandler {

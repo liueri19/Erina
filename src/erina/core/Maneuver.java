@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * A Maneuver describes a set of turnings and movements.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 public class Maneuver {

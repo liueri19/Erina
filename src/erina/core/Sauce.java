@@ -9,7 +9,7 @@ package erina.core;
  * of expiry. The goal of this behaviour is to encourage cooperation
  * among Competitors.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 public final class Sauce extends Entity<Sauce, SauceActor> {

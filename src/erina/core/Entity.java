@@ -12,7 +12,7 @@ import java.util.List;
  * <p>Entities can be converted to EntityActors using {@link Entity#getActor()}. Similarly
  * EntityActors can be converted to Entities using {@link EntityActor#getEntity()}.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>> {

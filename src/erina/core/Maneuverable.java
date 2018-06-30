@@ -6,7 +6,7 @@ package erina.core;
  *
  * @see Maneuver
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 @FunctionalInterface

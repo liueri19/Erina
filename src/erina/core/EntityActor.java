@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * An EntityActor can be converted to an Entity.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 abstract class EntityActor<E extends Entity<E, A>, A extends EntityActor<E, A>>

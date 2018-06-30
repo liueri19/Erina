@@ -3,7 +3,7 @@ package erina;
 /**
  * Represents a Coordinate with 2 int values.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 public class Coordinate extends Pair<Integer, Integer> {

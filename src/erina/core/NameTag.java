@@ -7,7 +7,7 @@ import greenfoot.GreenfootImage;
 /**
  * The NameTag is a piece of text as a label next to a Competitor.
  *
- * @version beta
+ * @version 1.0
  * @author Eric
  */
 final class NameTag extends Actor {

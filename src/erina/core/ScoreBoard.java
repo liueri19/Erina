@@ -6,15 +6,6 @@ import greenfoot.GreenfootImage;
 
 import java.util.List;
 
-/**
- * Class ScoreBoard
- *
- * @author Brian Arnold
- * @version April 2017
- * <p>
- * This class is a modification of the Greenfoot ScoreBoard class.
- */
-
 
 /**
  * An actor class that can display a scoreboard, using Greenfoot's

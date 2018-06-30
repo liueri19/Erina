@@ -154,7 +154,7 @@ public final class CompetitorStats {
 	public int getNuggetsValue() { return nuggetsValue; }
 
 	/**
-	 * Returns the number of Sauces this Competitor has comsumed.
+	 * Returns the number of Sauces this Competitor has consumed.
 	 */
 	public int getSaucesCount() { return saucesCount; }
 

@@ -386,9 +386,8 @@ public final class Erina extends World {
 	 * @param sound	the sound to play
 	 */
 	public static void tryPlaySound(GreenfootSound sound) {
-		// TODO uncomment
-//		if (sound != null && !sound.isPlaying())
-//			sound.play();
+		if (sound != null && !sound.isPlaying())
+			sound.play();
 	}
 
 	/**

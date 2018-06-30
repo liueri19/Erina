@@ -3,7 +3,7 @@ package erina.core;
 /**
  * A class that holds some statistics about a Competitor.
  *
- * @version alpha
+ * @version beta
  * @author Eric
  */
 public final class CompetitorStats {

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * The World where Competitors compete in.
  * The Erina is the perfected version of the original beloved and wildly popular Arena.
  *
- * @version alpha
+ * @version beta
  * @author Eric
  */
 public final class Erina extends World {

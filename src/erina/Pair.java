@@ -2,6 +2,9 @@ package erina;
 
 /**
  * Simple immutable data class representing a pair of values.
+ *
+ * @version beta
+ * @author Eric
  */
 public class Pair<K, V> {
 	private final K key;

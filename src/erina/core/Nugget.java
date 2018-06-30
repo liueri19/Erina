@@ -4,7 +4,7 @@ package erina.core;
  * A Nugget is an Entity with some energy. Competitors may acquire the energy
  * in a Nugget by touching it.
  *
- * @version alpha
+ * @version beta
  * @author Eric
  */
 public final class Nugget extends Entity<Nugget, NuggetActor> {
@@ -39,6 +39,7 @@ public final class Nugget extends Entity<Nugget, NuggetActor> {
 	}
 }
 
+/** The EntityActor counterpart of the Entity Nugget. */
 final class NuggetActor extends EntityActor<Nugget, NuggetActor> {
 	NuggetActor(Nugget entity) {
 		super(entity);

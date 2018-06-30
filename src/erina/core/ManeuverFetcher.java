@@ -8,7 +8,7 @@ import java.util.concurrent.*;
  * This class helps to get Maneuvers from Maneuverables. Each Maneuverable is handled by
  * a separate thread.
  *
- * @version alpha
+ * @version beta
  * @author Eric
  */
 final class ManeuverFetcher {

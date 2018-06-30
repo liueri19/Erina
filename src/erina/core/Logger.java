@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * Log events happened in the Erina.
  *
- * @version alpha
+ * @version beta
  * @author Eric
  */
 class Logger {

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * A Maneuver describes a set of turnings and movements.
  *
- * @version alpha
+ * @version beta
  * @author Eric
  */
 public class Maneuver {
@@ -190,9 +190,6 @@ public class Maneuver {
 
 	/**
 	 * An Action is a single step in a Maneuver. An Action can be applied to an Entity.
-	 *
-	 * @version alpha
-	 * @author Eric
 	 */
 	private abstract static class Action {
 		abstract void applyTo(Competitor competitor);

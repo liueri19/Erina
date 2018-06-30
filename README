@@ -8,6 +8,9 @@ The Erina is build with the following goals in mind:
 5. Minimize effort needed to migrate existing Competitor classes.
 6. In achieving the previous goals, the Erina should not complicate the implementation of Competitors.
 
+
+Changes:
+
 Entity class is added to help limit Competitor class's access to illegal methods. All directed subclasses of Entity class must have a companion class that extends EntityActor. For examples, see Competitor-CompetitorActor, Nugget-NuggetActor, and Sauce-SauceActor.
 See Erina for examples of proper Entity initialization.
 

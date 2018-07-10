@@ -56,14 +56,15 @@ public abstract class Erina extends World {
 
 	/** Width of the Erina. */
 	public static final int WORLD_WIDTH = 1024;
+
 	/** Height of the Erina. */
 	public static final int WORLD_HEIGHT = 720;
 
-	/** Maximum number of nuggets allowed to exist simultaneously in the Erina. */
-	public static final int MAX_NUGGETS = 15;
-
 	/** Maximum number of cycles before the competition ends. */
 	public static final int MAX_CYCLES = 10000;
+
+	/** Maximum number of nuggets allowed to exist simultaneously in the Erina. */
+	private static final int MAX_NUGGETS = 15;
 
 	/** Energy rewarded to surviving Competitors each cycle. */
 	public static final int ENERGY_PER_CYCLE = 1;
@@ -87,6 +88,8 @@ public abstract class Erina extends World {
 	private final String EOG_SOUND_FILE = "sounds/RISE-SHORT_Snap.wav";
 	private final GreenfootSound EOG_SOUND = new GreenfootSound(EOG_SOUND_FILE);
 
+	private final String BACKGROUND_FILE = "images/bathroom-tile.jpg";
+
 	private boolean isFirstAct = true;
 
 	private long currentCycle = 0;
@@ -103,13 +106,30 @@ public abstract class Erina extends World {
 	private final List<Competitor> COMPETITORS = new LinkedList<>();
 	private final List<Competitor> DECEASED_COMPS = new LinkedList<>();
 
+	private final World DISPLAY;
 
-	public Erina() {
-		super(WORLD_WIDTH, WORLD_HEIGHT, 1);
 
-		setBackground("images/bathroom-tile.jpg");
+	/**
+	 * Constructs a new Erina, displaying only to this World.
+	 */
+	public Erina() { this(null); }
 
-		System.out.println("Welcome to The Erina!");
+	/**
+	 * Constructs a new Erina, displaying the results of actions on the specified World.
+	 * Reflecting the actions to another World is only needed if the Erina is used in the
+	 * Greenfoot IDE, which requires the World displayed to be a direct subclass of World.
+	 * @param display	the World to reflect actions on
+	 */
+	public Erina(World display) {
+		super(Erina.WORLD_WIDTH, Erina.WORLD_HEIGHT, 1);
+
+		DISPLAY = display;
+
+		setBackground(BACKGROUND_FILE);
+		if (DISPLAY != null) DISPLAY.setBackground(getBackground());
+
+
+		Logger.logLine("Welcome to The Erina!");
 
 
 		{
@@ -168,11 +188,11 @@ public abstract class Erina extends World {
 			final List<Competitor> competitors = prepareCompetitors();
 
 			final List<Coordinate> coordinates =
-					getCoordinatesFor(competitors.size(), WORLD_WIDTH, WORLD_HEIGHT);
+					getCoordinatesFor(competitors.size(), Erina.WORLD_WIDTH, Erina.WORLD_HEIGHT);
 			// calculated coordinates are centered at the center of the world, need to convert
 			coordinates.replaceAll(c -> new Coordinate(
-					WORLD_WIDTH / 2 + c.getX(),
-					WORLD_HEIGHT / 2 - c.getY()
+					Erina.WORLD_WIDTH / 2 + c.getX(),
+					Erina.WORLD_HEIGHT / 2 - c.getY()
 			));
 
 			for (int i = 0; i < competitors.size(); i++) {
@@ -197,6 +217,9 @@ public abstract class Erina extends World {
 
 			FETCHER.start();
 		}
+
+
+
 	}
 
 
@@ -235,7 +258,7 @@ public abstract class Erina extends World {
 		currentCycle++;
 
 		// if game ended
-		if (COMPETITORS.size() < 2 || currentCycle >= MAX_CYCLES) {
+		if (COMPETITORS.size() < 2 || currentCycle >= Erina.MAX_CYCLES) {
 			FETCHER.shutdown();
 			Greenfoot.stop();
 
@@ -262,7 +285,7 @@ public abstract class Erina extends World {
 			// display score board
 			addObject(
 					new ScoreBoard(1000, 700, ALL_COMPS),
-					WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+					Erina.WORLD_WIDTH / 2, Erina.WORLD_HEIGHT / 2);
 		}
 
 
@@ -296,8 +319,8 @@ public abstract class Erina extends World {
 		if (Math.random() < PROBABILITY) {	// if add nugget
 			addEntity(
 					NUGGETS.get(Greenfoot.getRandomNumber(NUGGETS.size())),
-					Greenfoot.getRandomNumber(WORLD_WIDTH),
-					Greenfoot.getRandomNumber(WORLD_HEIGHT)
+					Greenfoot.getRandomNumber(Erina.WORLD_WIDTH),
+					Greenfoot.getRandomNumber(Erina.WORLD_HEIGHT)
 			);
 		}
 	}
@@ -317,8 +340,8 @@ public abstract class Erina extends World {
 		if (Math.random() < PROBABILITY) {
 			addEntity(
 					SAUCES.get(Greenfoot.getRandomNumber(SAUCES.size())),
-					Greenfoot.getRandomNumber(WORLD_WIDTH),
-					Greenfoot.getRandomNumber(WORLD_HEIGHT)
+					Greenfoot.getRandomNumber(Erina.WORLD_WIDTH),
+					Greenfoot.getRandomNumber(Erina.WORLD_HEIGHT)
 			);
 		}
 	}
@@ -577,9 +600,7 @@ public abstract class Erina extends World {
 	@Override
 	public <T> List<T> getObjects(Class<T> cls) {
 
-		rejectType(Actor.class, cls,
-				new IllegalArgumentException("Type of or subtype of Actor is unaccepted")
-		);
+		rejectActorType(cls);
 
 		return getObjectsUsing(super::getObjects, cls);
 	}
@@ -608,9 +629,7 @@ public abstract class Erina extends World {
 	public <T> List<T> getObjectsAt(int x, int y, Class<T> cls)
 			throws IllegalArgumentException {
 
-		rejectType(Actor.class, cls,
-				new IllegalArgumentException("Type of or subtype of Actor is unaccepted")
-		);
+		rejectActorType(cls);
 
 		return getObjectsUsing(
 				c -> super.getObjectsAt(x, y, c),
@@ -618,6 +637,16 @@ public abstract class Erina extends World {
 		);
 	}
 
+
+	/**
+	 * @see World#addObject(Actor, int, int)
+	 */
+	@Override
+	public void addObject(Actor object, int x, int y) {
+		super.addObject(object, x, y);
+		if (DISPLAY != null)
+			DISPLAY.addObject(object, x, y);
+	}
 
 	/**
 	 * Adds the specified Entity to this Erina, automatically adding the linked
@@ -637,6 +666,16 @@ public abstract class Erina extends World {
 
 
 	/**
+	 * @see World#removeObject(Actor)
+	 */
+	@Override
+	public void removeObject(Actor object) {
+		super.removeObject(object);
+		if (DISPLAY != null)
+			DISPLAY.removeObject(object);
+	}
+
+	/**
 	 * Removes the specified Entity from the world.
 	 * @param entity	the Entity to remove
 	 * @see World#removeObject(Actor)
@@ -653,6 +692,17 @@ public abstract class Erina extends World {
 			COMPETITORS.remove(competitor); DECEASED_COMPS.add(competitor);
 			removeObject(competitor.getNameTag());
 		}
+	}
+
+
+	/**
+	 * @see World#removeObjects(Collection)
+	 */
+	@Override
+	public void removeObjects(Collection<? extends Actor> objects) {
+		super.removeObjects(objects);
+		if (DISPLAY != null)
+			DISPLAY.removeObjects(objects);
 	}
 
 

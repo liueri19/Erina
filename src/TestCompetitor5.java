@@ -1,5 +1,3 @@
-package competitors;
-
 import erina.core.Competitor;
 import erina.core.Erina;
 import erina.core.Maneuver;

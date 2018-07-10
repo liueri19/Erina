@@ -1,6 +1,5 @@
 package erina.core;
 
-import competitors.*;
 import erina.Coordinate;
 import erina.Pair;
 import greenfoot.*;
@@ -13,10 +12,10 @@ import java.util.stream.Collectors;
  * The World where Competitors compete in.
  * The Erina is the perfected version of the original beloved and wildly popular Arena.
  *
- * @version 1.0
+ * @version 1.1
  * @author Eric
  */
-public final class Erina extends World {
+public abstract class Erina extends World {
 	
 	/*
 	 * Note to maintainers:
@@ -166,15 +165,7 @@ public final class Erina extends World {
 			 */
 
 			// COMPETITORS not used because Erina#addEntity also adds Competitor to COMPETITORS
-			final List<Competitor> competitors = new ArrayList<>();
-
-			// competitors added here, follow this pattern to add/remove competitors
-			competitors.add(new TestCompetitor2(this, "TC_2"));
-			competitors.add(new TestCompetitor3(this, "TC_3"));
-			competitors.add(new TestCompetitor4(this, "TC_4"));
-			competitors.add(new TestCompetitor5(this, "TC_5"));
-			competitors.add(new EvanSchimberg(this, "Evan"));
-			competitors.add(new Jstew(this, "Jstew"));
+			final List<Competitor> competitors = prepareCompetitors();
 
 			final List<Coordinate> coordinates =
 					getCoordinatesFor(competitors.size(), WORLD_WIDTH, WORLD_HEIGHT);
@@ -189,7 +180,8 @@ public final class Erina extends World {
 				final Coordinate coordinate = coordinates.get(i);
 
 				// finish init
-				competitor.init(new CompetitorActor(competitor));
+				if (!competitor.hasInit())
+					competitor.init(new CompetitorActor(competitor));
 				// add to world, this also adds Competitor to COMPETITORS
 				addEntity(competitor, coordinate.getX(), coordinate.getY());
 				// add NameTags
@@ -206,6 +198,13 @@ public final class Erina extends World {
 			FETCHER.start();
 		}
 	}
+
+
+	/**
+	 * Prepares a List of Competitors to be used in the Erina.
+	 * @return	a List of Competitors to be used in the Erina
+	 */
+	protected abstract List<Competitor> prepareCompetitors();
 
 
 	@Override

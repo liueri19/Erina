@@ -27,3 +27,10 @@ The ManeuverHandler carries out the Maneuvers fetched by ManeuverFetcher. It als
 The NameTag is a small label following the Competitor in the Erina. It only displays the name of the Competitor and does not interfere with the game.
 
 The Pair and Coordinate classes were originally private nested classes for easier handling of paired values. It is later decided to add to the public API as an utility class.
+
+
+Update v1.1:
+I have recently learned that the greenfoot system does not support packages. Due to the fact that this project heavily uses packages to limit the visibility of illegal methods, this makes this project impossible to be saved in the format of a greenfoot project as of v1.0.
+Several changes has been make to erina.core.Erina, and a second Erina class has been added in src/. This helps circumventing the restrictions. All subclasses of Competitor are no longer placed in the competitors package, and are moved to src/.
+
+Classes in package erina will be provided as a jar library, which can be imported into greenfoot.

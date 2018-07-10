@@ -12,7 +12,7 @@ import java.util.List;
  * <p>Entities can be converted to EntityActors using {@link Entity#getActor()}. Similarly
  * EntityActors can be converted to Entities using {@link EntityActor#getEntity()}.
  *
- * @version 1.0
+ * @version 1.1
  * @author Eric
  */
 public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>> {
@@ -45,6 +45,12 @@ public abstract class Entity<E extends Entity<E, A>, A extends EntityActor<E, A>
 		if (image != null)
 			getActor().setImage(image);
 	}
+
+	/**
+	 * True if {@link Entity#init(EntityActor)} has been invoked on this Entity, false
+	 * otherwise.
+	 */
+	boolean hasInit() { return hasInit; }
 
 	/** Gets the Actor bound to this Entity. */
 	A getActor() { return actor; }
